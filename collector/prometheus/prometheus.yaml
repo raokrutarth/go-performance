@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 1s
+
+scrape_configs:
+- job_name: benchmark_collector
+  static_configs:
+  - targets:
+    - benchmark:3535
+- job_name: node_collector
+  static_configs:
+  - targets:
+    - benchmark:4000
+- job_name: process_collector
+  static_configs:
+  - targets:
+    - benchmark:5000
+- job_name: 'prometheus_self'
+  # Override the global default and scrape targets from this job every 5 seconds.
+  scrape_interval: 5s
+  static_configs:
+    - targets: ['localhost:9090']
+
