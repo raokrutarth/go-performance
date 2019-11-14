@@ -75,7 +75,7 @@ func mapTreeTest() {
 	root := make(map[string]interface{})
 	makeSpannedMapTree(root, 0)
 
-	waitAndMarshal(root, "map")
+	MarshalsAndWait(root, "map")
 }
 
 // makeSpannedMapTree constructs the tree of intended dimensions using nested maps
@@ -112,7 +112,7 @@ func structTreeTest() {
 	root := &treeNode{name: "root", children: []*treeNode{}}
 	makeSpannedStructTree(root, 0)
 
-	waitAndMarshal(root, "non_interface struct")
+	MarshalsAndWait(root, "non_interface struct")
 }
 
 func makeSpannedStructTree(parent *treeNode, depth int) {
@@ -170,9 +170,9 @@ func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
 	return res, nil
 }
 
-// waitAndMarshal sets event flags in the graph for correlation of
+// MarshalsAndWait sets event flags in the graph for correlation of
 // events to memory consumption during marshaling
-func waitAndMarshal(root interface{}, testName string) {
+func MarshalsAndWait(root interface{}, testName string) {
 
 	telemetry.SetRawValue(eventTag, treeBuildCompleteEvent) // set event identifier in graph
 	runtime.GC()                                            // flush the GC so only the tree is occupying memory
@@ -192,7 +192,7 @@ func waitAndMarshal(root interface{}, testName string) {
 
 	// stay alive with only JSON result in memory so memory stats can be scraped
 	log.Printf("[+] Only marshal result is in memory. Waiting...\n")
-	time.Sleep(30 * time.Minute)
+	time.Sleep(3 * time.Minute)
 	log.Printf("len: %d\nValue: \n%+v", len(marshaledBytes), marshaledBytes)
 }
 
