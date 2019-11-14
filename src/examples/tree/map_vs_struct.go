@@ -13,15 +13,16 @@ import (
 )
 
 /**
-	test to check the memory performance of a
+	test to check the memory performance of a tree (of same size)
+	constructed with nested maps and custom structs
 
 **/
 
 // var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 const (
-	maxTreeDepth       = 11
-	numChildrenPerNode = 30
+	maxTreeDepth       = 3
+	numChildrenPerNode = 50
 )
 
 const (
@@ -154,10 +155,6 @@ func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
 	return res, nil
 }
 
-/*
-	Helper functions and variables to send data to the benchmark tool
-*/
-
 // waitAndMarshal sets event flags in the graph for correlation of
 // events to memory consumption during marshaling
 func waitAndMarshal(root interface{}, testName string) {
@@ -172,18 +169,20 @@ func waitAndMarshal(root interface{}, testName string) {
 	log.Printf("[+] pre-marshal wait complete. Marshaling\n")
 	telemetry.SetRawValue(eventTag, preMarshalEvent) // set event identifier in graph
 
-	b := doMarshalRuns(root, 5)
+	marshaledBytes := doMarshalRuns(root, 5)
 
-	log.Printf("[+] Marshal runs complete. Result length: %d\n", len(b))
-	telemetry.SetRawValue(eventTag, postMarshalEvent)           // set event identifier in graph
-	telemetry.SetRawValue(marshalResultLenTag, float64(len(b))) // send result length to graph
+	log.Printf("[+] Marshal runs complete. Result length: %d\n", len(marshaledBytes))
+	telemetry.SetRawValue(eventTag, postMarshalEvent)                        // set event identifier in graph
+	telemetry.SetRawValue(marshalResultLenTag, float64(len(marshaledBytes))) // send result length to graph
 
 	// stay alive with only JSON result in memory so memory stats can be scraped
 	log.Printf("[+] Only marshal result is in memory. Waiting...\n")
 	time.Sleep(30 * time.Minute)
-	log.Printf("len: %d\nValue: \n%+v", len(b), b)
+	log.Printf("len: %d\nValue: \n%+v", len(marshaledBytes), marshaledBytes)
 }
 
+// doMarshalRuns marshals the passed tree num times and returns
+// the byte array of the final marshal result
 func doMarshalRuns(root interface{}, num int) []byte {
 	var b []byte
 	var err error
@@ -211,6 +210,7 @@ func doMarshalRuns(root interface{}, num int) []byte {
 	return b
 }
 
+// getRandomKey returns a random fixed size string
 func getRandomKey() string {
 	b := make([]byte, 32)
 	for i := range b {

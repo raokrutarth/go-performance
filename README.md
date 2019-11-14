@@ -12,7 +12,7 @@ Playground to measure performance implications of Golang code snippets.
 
 **Supported targets**
 
-`test-file`
+`test-file` [TODO]
 
 Given a _test.go file containing a Benchmark...() function, run the benchmark as a binary and dump pprof profiles.
 
@@ -21,7 +21,7 @@ Given a _test.go file containing a Benchmark...() function, run the benchmark as
 Given a go package with a main() function, run the application on the container.
 __Can import the telemetry package APIs to expose internal Golang runtime statistics or export internal numbers to the grafana dashboard.__
 
-`file`
+`file` [TODO]
 
 Given a go file/package with a main() function, run the application on the container.
 __Can import the telemetry package APIs to expose internal Golang runtime statistics or export internal numbers to the grafana dashboard.__
@@ -36,10 +36,18 @@ make test-file BENCHMARK_TARGET=src/example/benchmark_example_test.go
 
 ### Benchmarking Packages
 
-Add the desired package containing a main function to src/ and set the package as a benchmark target as below.
+Add the desired package containing a main function to src/ and set the package as a benchmark target as below. See `src/examples/counters` for an example.
 
 ```Makefile
-make package BENCHMARK_TARGET=src/examples/telemetry
+make package BENCHMARK_TARGET=src/examples/counters
 ```
+
+Run the container with
+
+```bash
+make package
+```
+
+The grafana UI should be visibile on port 3333 of the host machine
 
 
