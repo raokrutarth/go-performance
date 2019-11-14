@@ -13,7 +13,7 @@ package: collection run-package
 run-package:
 	@docker cp ./src $(BENCHMARK_CONTAINER):/go
 	@docker exec -i $(BENCHMARK_CONTAINER) bash -c "cd /go/src/$(BENCHMARK_PACKAGE) && go get ./... && go build -o /benchmark ."
-	@docker exec $(BENCHMARK_CONTAINER) bash -c "/benchmark"
+	@docker exec -i $(BENCHMARK_CONTAINER) bash -c "/benchmark > out.txt"
 
 collection: clean-collection
 	@docker-compose up -d
