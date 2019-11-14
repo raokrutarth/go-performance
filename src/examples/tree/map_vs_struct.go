@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"math/rand"
 	"runtime"
@@ -22,7 +21,7 @@ import (
 
 const (
 	maxTreeDepth       = 3
-	numChildrenPerNode = 50
+	numChildrenPerNode = 100
 )
 
 const (
@@ -31,8 +30,10 @@ const (
 	leafNodeKey      = "leaf"
 	letterBytes      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	// counter value with this tag changes to correlate events in the test with the memory chart
+	// counter value with this tag increases to correlate events in the test with the memory chart
 	eventTag = "eventCounter"
+
+	testCounterTag = "num_tests"
 
 	marshalResultLenTag = "marshal_result_bytes"
 
@@ -48,11 +49,12 @@ const (
 func main() {
 	telemetry.Initialize()
 
-	for i := 0; ; i++ {
-		mapTreeTest()
-		// structTreeTest()
+	telemetry.SetRawValue(testCounterTag, 0)
 
-		fmt.Printf("[+] Test %d complete\n", i)
+	for {
+		mapTreeTest()
+
+		telemetry.IncreaseRawValue(testCounterTag, 1)
 	}
 
 }
@@ -77,9 +79,11 @@ func makeSpannedMapTree(parent map[string]interface{}, depth int) {
 	} else if depth < maxTreeDepth {
 
 		for i := 0; i < numChildrenPerNode; i++ {
+
 			newNode := make(map[string]interface{})
 			parent[getRandomKey()] = newNode
 			makeSpannedMapTree(newNode, depth+1)
+
 		}
 	}
 }
@@ -114,12 +118,14 @@ func makeSpannedStructTree(parent *treeNode, depth int) {
 	} else if depth < maxTreeDepth {
 
 		for i := 0; i < numChildrenPerNode; i++ {
+
 			newNode := &treeNode{
 				name:     getRandomKey(),
 				children: []*treeNode{},
 			}
 			parent.children = append(parent.children, newNode)
 			makeSpannedStructTree(newNode, depth+1)
+
 		}
 
 	}
