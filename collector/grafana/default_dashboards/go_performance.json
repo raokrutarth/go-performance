@@ -59,7 +59,8 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "value_gauge",
+          "expr": "value_gauge[72h]",
+          "instant": true,
           "legendFormat": "{{value_name}}",
           "refId": "A"
         }
@@ -1022,7 +1023,7 @@
         },
         {
           "expr": "rate(namedprocess_namegroup_thread_minor_page_faults_total[15s]) + rate(namedprocess_namegroup_thread_major_page_faults_total[15s])",
-          "legendFormat": "Rate",
+          "legendFormat": "Rate/sec",
           "refId": "B"
         }
       ],

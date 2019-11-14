@@ -20,8 +20,8 @@ import (
 // var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 const (
-	maxTreeDepth       = 5
-	numChildrenPerNode = 20
+	maxTreeDepth       = 11
+	numChildrenPerNode = 30
 )
 
 const (
@@ -41,6 +41,9 @@ const (
 	postMarshalEvent       = 300
 )
 
+/**
+	main function that infinitely runs the chosen test
+**/
 func main() {
 	telemetry.Initialize()
 
@@ -63,6 +66,7 @@ func mapTreeTest() {
 	waitAndMarshal(root, "map")
 }
 
+// makeSpannedMapTree constructs the tree of intended dimensions using nested maps
 func makeSpannedMapTree(parent map[string]interface{}, depth int) {
 	if depth == maxTreeDepth {
 
