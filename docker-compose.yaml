@@ -13,6 +13,7 @@ networks:
 services:
 
   benchmark:
+    container_name: gobenchmarkc
     build: '.'
     networks:
       - gobenchnet
@@ -20,6 +21,8 @@ services:
   prometheus:
     build:
       context: './collector/prometheus'
+    depends_on:
+      - benchmark
     volumes:
       - go_bench_data:/prometheus
     command:
@@ -28,7 +31,7 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--storage.tsdb.retention=720h'
       - '--web.enable-lifecycle'
-      - '--log.level=debug'
+      # - '--log.level=debug'
     restart: unless-stopped
     ports:
       - "9999:9090"
@@ -38,8 +41,9 @@ services:
   grafana:
     build: './collector/grafana'
     restart: unless-stopped
-    links:
+    depends_on:
       - prometheus
+      - benchmark
     ports:
       - '3333:3000'
     networks:

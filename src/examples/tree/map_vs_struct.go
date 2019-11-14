@@ -2,16 +2,20 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
-	"net/http"
 	"runtime"
 	"time"
 
+	"golang.performance.com/telemetry"
 	// jsoniter "github.com/json-iterator/go"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+/**
+	test to check the memory performance of a
+
+**/
 
 // var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
@@ -20,11 +24,33 @@ const (
 	numChildrenPerNode = 20
 )
 
-func main() {
-	go exportPerformance()
+const (
+	mapTreeLeaves    = "map_tree_leaf_nodes"
+	structTreeLeaves = "struct_tree_leaf_nodes"
+	leafNodeKey      = "leaf"
+	letterBytes      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	// mapTreeTest()
-	structTreeTest()
+	// counter value with this tag changes to correlate events in the test with the memory chart
+	eventTag = "eventCounter"
+
+	marshalResultLenTag = "marshal_result_bytes"
+
+	treeBuildCompleteEvent = 50
+	postTreeBuildGCFinish  = 100
+	preMarshalEvent        = 200
+	postMarshalEvent       = 300
+)
+
+func main() {
+	telemetry.Initialize()
+
+	for i := 0; ; i++ {
+		mapTreeTest()
+		// structTreeTest()
+
+		fmt.Printf("[+] Test %d complete\n", i)
+	}
+
 }
 
 /*
@@ -41,7 +67,7 @@ func makeSpannedMapTree(parent map[string]interface{}, depth int) {
 	if depth == maxTreeDepth {
 
 		parent[leafNodeKey] = make([]byte, 100)
-		leafCounter.WithLabelValues(mapTreeLeaves).Inc()
+		telemetry.IncreaseRawValue(mapTreeLeaves, 1)
 
 	} else if depth < maxTreeDepth {
 
@@ -78,7 +104,7 @@ func makeSpannedStructTree(parent *treeNode, depth int) {
 			value: make([]byte, 100),
 		}
 		parent.children = append(parent.children, leafNode)
-		leafCounter.WithLabelValues(structTreeLeaves).Inc()
+		telemetry.IncreaseRawValue(structTreeLeaves, 1)
 
 	} else if depth < maxTreeDepth {
 
@@ -128,51 +154,25 @@ func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
 	Helper functions and variables to send data to the benchmark tool
 */
 
-const (
-	restEndpoint        = "/metrics"
-	merticsServePort    = ":35005"
-	mapTreeLeaves       = "map_tree_leaf_nodes"
-	structTreeLeaves    = "struct_tree_leaf_nodes"
-	leafNodeKey         = "leaf"
-	letterBytes         = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	eventTag            = "eventCounter" // the counter value with this tag changes to correlate events in the test with the memory chart
-	marshalResultLenTag = "marshal_result_bytes"
-
-	treeBuildCompleteEvent = 50
-	postTreeBuildGCFinish  = 100
-	preMarshalEvent        = 200
-	postMarshalEvent       = 300
-)
-
-var (
-	leafCounter = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "hpe_config_arbitrary_value",
-			Help: "Value of arbitrary in-app numbers",
-		},
-		[]string{"value_name"},
-	)
-)
-
 // waitAndMarshal sets event flags in the graph for correlation of
 // events to memory consumption during marshaling
 func waitAndMarshal(root interface{}, testName string) {
 
-	leafCounter.WithLabelValues(eventTag).Set(treeBuildCompleteEvent) // set event identifier in graph
-	runtime.GC()                                                      // flush the GC so only the tree is occupying memory
-	leafCounter.WithLabelValues(eventTag).Set(postTreeBuildGCFinish)  // set event identifier in graph
+	telemetry.SetRawValue(eventTag, treeBuildCompleteEvent) // set event identifier in graph
+	runtime.GC()                                            // flush the GC so only the tree is occupying memory
+	telemetry.SetRawValue(eventTag, postTreeBuildGCFinish)  // set event identifier in graph
 
 	log.Printf("[+] spanned %s tree constructed. Only tree object is occupying memory\n", testName)
 	time.Sleep(45 * time.Second)
 
 	log.Printf("[+] pre-marshal wait complete. Marshaling\n")
-	leafCounter.WithLabelValues(eventTag).Set(preMarshalEvent) // set event identifier in graph
+	telemetry.SetRawValue(eventTag, preMarshalEvent) // set event identifier in graph
 
 	b := doMarshalRuns(root, 5)
 
 	log.Printf("[+] Marshal runs complete. Result length: %d\n", len(b))
-	leafCounter.WithLabelValues(eventTag).Set(postMarshalEvent)           // set event identifier in graph
-	leafCounter.WithLabelValues(marshalResultLenTag).Set(float64(len(b))) // send result length to graph
+	telemetry.SetRawValue(eventTag, postMarshalEvent)           // set event identifier in graph
+	telemetry.SetRawValue(marshalResultLenTag, float64(len(b))) // send result length to graph
 
 	// stay alive with only JSON result in memory so memory stats can be scraped
 	log.Printf("[+] Only marshal result is in memory. Waiting...\n")
@@ -198,7 +198,7 @@ func doMarshalRuns(root interface{}, num int) []byte {
 			log.Fatalf("unable to Marshal. Exiting...")
 		}
 
-		leafCounter.WithLabelValues(eventTag).Add(10) // add to event identifier in graph
+		telemetry.IncreaseRawValue(eventTag, 10) // add to event identifier in graph
 
 		log.Printf("[+] Finished marshal iteration %d. Flushing GC to let only marshal result persist\n", i)
 		runtime.GC() // flush the GC to remove the tree/old marshal result from memory
@@ -213,11 +213,4 @@ func getRandomKey() string {
 		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
 	}
 	return string(b)
-}
-
-func exportPerformance() {
-	prometheus.MustRegister(leafCounter)
-
-	http.Handle(restEndpoint, promhttp.Handler())
-	http.ListenAndServe(merticsServePort, nil)
 }

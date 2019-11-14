@@ -2,14 +2,20 @@ package main
 
 import (
 	"math/rand"
-	"telemetry"
+	"golang.performance.com/telemetry"
 	"time"
 )
 
-func main() {
-	telemetry.Initalize()
+/**
+	Simple example to demonstrate the use of the telemery API.
+		- Increment a custom in-app counter every 5 seconds
+		- Record a random value that will be added to a summary
+**/
 
-	rawMetricName := "example_guage"
+func main() {
+	telemetry.Initialize()
+
+	rawMetricName := "example_gauge"
 	summaryMetricName := "example_summary"
 
 	for {

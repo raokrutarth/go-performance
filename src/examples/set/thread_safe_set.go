@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"golang.performance.com/telemetry"
 )
 
 /*
@@ -67,44 +68,64 @@ func (s *Set) IsIn(val interface{}) (bool, error) {
 }
 
 func main() {
-	fmt.Println("Hello world")
-	set := NewSet(reflect.String)
-	k1, k2, k3 := "aaa", "bbb", "a"
-	var a, b, c bool
-	var err error
 
-	err = set.Add(k1)
-	err = set.Add(k2)
-	if err != nil {
-		fmt.Printf("%s\n\n", err)
-		return
+	telemetry.Initialize()
+
+	for {
+		set := NewSet(reflect.String)
+		k1, k2, k3 := "aaa", "bbb", "a"
+		var a, b, c bool
+		var err error
+
+		err = set.Add(k1)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+			return
+		}
+
+		err = set.Add(k2)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+			return
+		}
+
+		a, err = set.IsIn(k1)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+		}
+
+		b, err = set.IsIn(k2)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+		}
+
+		c, err = set.IsIn(k3)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+		}
+
+		fmt.Printf("%s in set: %v, %s in set: %v, %s in set: %v\n", k1, a, k2, b, k3, c)
+
+		err = set.Remove(k1)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+			return
+		}
+
+		a, err = set.IsIn(k1)
+		b, err = set.IsIn(k2)
+		c, err = set.IsIn(k3)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+		}
+
+		fmt.Printf("%s in set: %v, %s in set: %v, %s in set: %v\n", k1, a, k2, b, k3, c)
+
+		err = set.Add(42)
+		if err != nil {
+			fmt.Printf("%s\n\n", err)
+		}
+
 	}
 
-	a, err = set.IsIn(k1)
-	b, err = set.IsIn(k2)
-	c, err = set.IsIn(k3)
-	if err != nil {
-		fmt.Printf("%s\n\n", err)
-	}
-	fmt.Printf("%s in set: %v, %s in set: %v, %s in set: %v\n", k1, a, k2, b, k3, c)
-
-	err = set.Remove(k1)
-	if err != nil {
-		fmt.Printf("%s\n\n", err)
-		return
-	}
-
-	a, err = set.IsIn(k1)
-	b, err = set.IsIn(k2)
-	c, err = set.IsIn(k3)
-	if err != nil {
-		fmt.Printf("%s\n\n", err)
-	}
-
-	fmt.Printf("%s in set: %v, %s in set: %v, %s in set: %v\n", k1, a, k2, b, k3, c)
-
-	err = set.Add(42)
-	if err != nil {
-		fmt.Printf("%s\n\n", err)
-	}
 }

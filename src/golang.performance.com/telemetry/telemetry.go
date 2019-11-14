@@ -50,6 +50,10 @@ func Initialize() {
 	testMetricUpdater()
 }
 
+func SetRawValue(valueName string, value float64) {
+	arbitraryValues.WithLabelValues(valueName).Set(value)
+}
+
 // IncreaseRawValue increases/inatalizes a raw counter by delta. Visible on the
 // grafana dashboard in the ___ graph
 func IncreaseRawValue(valueName string, delta float64) {
