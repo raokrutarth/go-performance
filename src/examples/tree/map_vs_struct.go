@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/rand"
 	"runtime"
+	"runtime/debug"
 	"time"
 
 	"golang.performance.com/telemetry"
@@ -51,10 +52,18 @@ func main() {
 
 	telemetry.SetRawValue(testCounterTag, 0)
 
-	for {
-		mapTreeTest()
+	for i := 0; ; i++ {
+
+		if i%2 == 0 {
+			// alternate between map and struct tests
+			mapTreeTest()
+		} else {
+			structTreeTest()
+		}
 
 		telemetry.IncreaseRawValue(testCounterTag, 1)
+		debug.FreeOSMemory()
+		time.Sleep(10 * time.Second)
 	}
 
 }
