@@ -13,7 +13,6 @@ networks:
 services:
 
   benchmark:
-    container_name: gobenchmarkc
     image: gobenchi
     build: '.'
     networks:

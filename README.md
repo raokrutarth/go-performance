@@ -39,6 +39,7 @@ make test-file BENCHMARK_TARGET=src/example/benchmark_example_test.go
 Add the desired package containing a main function to src/ and set the package as a benchmark target as below. See `src/examples/counters` for an example.
 
 ```Makefile
+make setup
 make package BENCHMARK_TARGET=src/examples/counters
 ```
 

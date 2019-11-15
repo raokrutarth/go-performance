@@ -7,10 +7,15 @@ import (
 	"golang.performance.com/telemetry"
 )
 
+/*
+	Test to see if mutexes have better CPU usage and higher read
+	and write rates than channel based protection for the same number of workers.
+*/
+
 const (
-	readCounterTag     string = "num_read"
-	increaseCounterTag        = "num_increase"
-	setCounterTag             = "num_set"
+	readCounterTag     = "num_read"
+	increaseCounterTag = "num_increase"
+	setCounterTag      = "num_set"
 
 	readWaitTimeTag     = "read_wait_ns"
 	increaseWaitTimeTag = "increase_wait_time_ns"
@@ -18,13 +23,9 @@ const (
 
 	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	mapKeySizeBytes = 100000
+	mapKeySizeBytes = 5000000
 )
 
-/*
-	Test to see if mutexes have better CPU usage and I/O waiting
-	than channel protection.
-*/
 type Cache interface {
 	get(key string) int
 	set(key string, value int)
@@ -32,8 +33,8 @@ type Cache interface {
 
 func main() {
 	telemetry.Initialize()
-	// cache := newMutexCache()
-	cache := newChanCache()
+	cache := newMutexCache()
+	// cache := newChanCache()
 
 	// setup reader, setter and increasors on same keys
 	for i := 0; i < 300; i++ {
