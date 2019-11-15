@@ -28,7 +28,7 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 10,
+        "h": 8,
         "w": 12,
         "x": 0,
         "y": 0
@@ -72,7 +72,7 @@
       "title": "Telemetry Counters",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "transparent": true,
@@ -116,7 +116,7 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 10,
+        "h": 8,
         "w": 12,
         "x": 12,
         "y": 0
@@ -159,7 +159,7 @@
       "title": "Telemetry Summaries",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "transparent": true,
@@ -206,7 +206,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 10
+        "y": 8
       },
       "id": 26,
       "legend": {
@@ -308,7 +308,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 10
+        "y": 8
       },
       "id": 24,
       "legend": {
@@ -410,7 +410,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 16
       },
       "id": 2,
       "legend": {
@@ -510,7 +510,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 30
+        "y": 28
       },
       "id": 54,
       "legend": {
@@ -680,7 +680,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 41
       },
       "id": 48,
       "legend": {
@@ -784,7 +784,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 43
+        "y": 41
       },
       "id": 20,
       "legend": {
@@ -876,7 +876,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 51
+        "y": 49
       },
       "id": 68,
       "legend": {
@@ -980,7 +980,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 51
+        "y": 49
       },
       "id": 18,
       "legend": {
@@ -1084,7 +1084,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 59
+        "y": 57
       },
       "id": 62,
       "legend": {
@@ -1176,7 +1176,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 59
+        "y": 57
       },
       "id": 12,
       "legend": {
@@ -1269,7 +1269,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 67
+        "y": 65
       },
       "id": 4,
       "legend": {
@@ -1363,7 +1363,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 67
+        "y": 65
       },
       "id": 60,
       "legend": {
@@ -1439,6 +1439,183 @@
       }
     },
     {
+      "aliasColors": {
+        "example_gauge": "dark-red"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 73
+      },
+      "id": 69,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(value_gauge[10s])[72h:10s]",
+          "instant": true,
+          "legendFormat": "{{value_name}}/sec",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Telemetry Counter Rate",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 73
+      },
+      "id": 70,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "value_summaries",
+          "legendFormat": "{{variable_name}}-{{quantile}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Telemetry Summary as Time in ns",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ns",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -1450,7 +1627,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 75
+        "y": 81
       },
       "id": 36,
       "legend": {
@@ -1542,7 +1719,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 75
+        "y": 82
       },
       "id": 22,
       "legend": {

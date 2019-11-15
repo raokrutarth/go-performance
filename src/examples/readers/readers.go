@@ -28,7 +28,8 @@ type Cache interface {
 
 func main() {
 	telemetry.Initialize()
-	cache := newMutexCache()
+	// cache := newMutexCache()
+	cache := newChanCache()
 
 	// setup reader, setter and increasors on same keys
 	for i := 0; i < 50; i++ {
