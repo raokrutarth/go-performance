@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-/*
-	Simple thread safe cache api that allowes locked reads
-*/
-
 const (
 	// adjust speed of terminal output by changing duration
 	duration = 2
@@ -138,6 +134,7 @@ func main() {
 		data: make(map[string]myFavObjType),
 		rw:   &sync.RWMutex{},
 	}
+
 	for i := 0; i < 5; i++ {
 		key := fmt.Sprintf("_%x_", i*255)
 		go reader(i, sc, key)
