@@ -14,6 +14,7 @@ services:
 
   benchmark:
     container_name: gobenchmarkc
+    image: gobenchi
     build: '.'
     networks:
       - gobenchnet
@@ -21,8 +22,6 @@ services:
   prometheus:
     build:
       context: './collector/prometheus'
-    depends_on:
-      - benchmark
     volumes:
       - go_bench_data:/prometheus
     command:
@@ -43,7 +42,6 @@ services:
     restart: unless-stopped
     depends_on:
       - prometheus
-      - benchmark
     ports:
       - '3333:3000'
     networks:

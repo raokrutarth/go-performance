@@ -8,13 +8,17 @@ import (
 )
 
 const (
-	readCounterTag     = "num_read"
-	increaseCounterTag = "num_increase"
-	setCounterTag      = "num_set"
+	readCounterTag     string = "num_read"
+	increaseCounterTag        = "num_increase"
+	setCounterTag             = "num_set"
 
 	readWaitTimeTag     = "read_wait_ns"
 	increaseWaitTimeTag = "increase_wait_time_ns"
 	setWaitTimeTag      = "set_wait_time_ns"
+
+	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+	mapKeySizeBytes = 100000
 )
 
 /*
@@ -98,9 +102,8 @@ func setter(id int, cache Cache, key string, value int) {
 
 // getRandomKey returns a random fixed size string
 func getRandomKey() string {
-	letterBytes := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	bucket := make([]byte, 1000000)
+	bucket := make([]byte, mapKeySizeBytes)
 	capacity := int64(len(letterBytes))
 
 	for i := range bucket {
