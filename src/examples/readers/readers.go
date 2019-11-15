@@ -102,7 +102,7 @@ func setter(id int, cache Cache, key string, value int) {
 func getRandomKey() string {
 	letterBytes := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	bucket := make([]byte, 32000)
+	bucket := make([]byte, 100000)
 	capacity := int64(len(letterBytes))
 
 	for i := range bucket {
