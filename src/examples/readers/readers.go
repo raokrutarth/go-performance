@@ -32,12 +32,12 @@ func main() {
 	cache := newChanCache()
 
 	// setup reader, setter and increasors on same keys
-	for i := 0; i < 50; i++ {
+	for i := 0; i < 300; i++ {
 		key := getRandomKey()
 
+		go setter(i, cache, key, rand.Intn(100))
 		go reader(i, cache, key)
 		go increasor(i, cache, key)
-		go setter(i, cache, key, rand.Intn(100))
 	}
 
 	for {
@@ -65,9 +65,7 @@ func increasor(id int, cache Cache, key string) {
 	for {
 		start = time.Now()
 
-		val := cache.get(key)
-		val++
-		cache.set(key, val)
+		cache.set(key, cache.get(key)+1)
 
 		telemetry.ExportVariableValue(increaseWaitTimeTag, float64(time.Since(start).Nanoseconds()))
 		telemetry.IncreaseRawValue(increaseCounterTag, 1)
