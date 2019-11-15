@@ -2,7 +2,6 @@ package main
 
 import (
 	"math/rand"
-	"sync"
 	"time"
 
 	"golang.performance.com/telemetry"
@@ -22,36 +21,35 @@ const (
 	Test to see if mutexes have better CPU usage and I/O waiting
 	than channel protection.
 */
-
-type ProtectedCache struct {
-	m map[string]int
-	sync.RWMutex
+type Cache interface {
+	get(key string) int
+	set(key string, value int)
 }
 
-func (pc *ProtectedCache) get(key string) int {
-	pc.RLock()
-	defer pc.RUnlock()
+func main() {
+	cache := newMutexCache()
 
-	if value, ok := pc.m[key]; ok {
-		return value
+	// setup reader, setter and increasors on same keys
+	for i := 0; i < 50; i++ {
+		key := getRandomKey()
+
+		go reader(i, cache, key)
+		go increasor(i, cache, key)
+		go setter(i, cache, key, rand.Intn(100))
 	}
 
-	return -1
+	for {
+		time.Sleep(60 * time.Minute)
+	}
 }
 
-func (pc *ProtectedCache) set(key string, value int) {
-	pc.Lock()
-	defer pc.Unlock()
-
-	pc.m[key] = value
-}
-
-func reader(id int, pc *ProtectedCache, key string) {
+// reader reads a value for the given key from the cache
+func reader(id int, cache Cache, key string) {
 	var start time.Time
 	for {
 		start = time.Now()
 
-		pc.get(key)
+		cache.get(key)
 
 		telemetry.ExportVariableValue(readWaitTimeTag, float64(time.Since(start).Nanoseconds()))
 		telemetry.IncreaseRawValue(readCounterTag, 1)
@@ -59,14 +57,15 @@ func reader(id int, pc *ProtectedCache, key string) {
 	}
 }
 
-func increasor(id int, pc *ProtectedCache, key string) {
+// increasor increases a value for the given key in the cache
+func increasor(id int, cache Cache, key string) {
 	var start time.Time
 	for {
 		start = time.Now()
 
-		val := pc.get(key)
+		val := cache.get(key)
 		val++
-		pc.set(key, val)
+		cache.set(key, val)
 
 		telemetry.ExportVariableValue(increaseWaitTimeTag, float64(time.Since(start).Nanoseconds()))
 		telemetry.IncreaseRawValue(increaseCounterTag, 1)
@@ -85,12 +84,12 @@ func increasor(id int, pc *ProtectedCache, key string) {
 
 // }
 
-func setter(id int, pc *ProtectedCache, key string, value int) {
+func setter(id int, cache Cache, key string, value int) {
 	var start time.Time
 	for {
 		start = time.Now()
 
-		pc.set(key, value)
+		cache.set(key, value)
 
 		telemetry.ExportVariableValue(setWaitTimeTag, float64(time.Since(start).Nanoseconds()))
 		telemetry.IncreaseRawValue(setCounterTag, 1)
@@ -109,23 +108,4 @@ func getRandomKey() string {
 	}
 
 	return string(bucket)
-}
-
-func main() {
-	pc := &ProtectedCache{
-		m: make(map[string]int),
-	}
-
-	// setup reader, setter and increasors on same keys
-	for i := 0; i < 50; i++ {
-		key := getRandomKey()
-
-		go reader(i, pc, key)
-		go increasor(i, pc, key)
-		go setter(i, pc, key, rand.Intn(100))
-	}
-
-	for {
-		time.Sleep(60 * time.Minute)
-	}
 }
