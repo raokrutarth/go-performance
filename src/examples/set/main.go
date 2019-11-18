@@ -35,7 +35,7 @@ func main() {
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, generateItem(itemSize))
+		items = append(items, GenerateItem(itemSize))
 	}
 
 	for {
