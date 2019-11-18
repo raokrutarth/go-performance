@@ -15,9 +15,7 @@ benchmark: run run-benchmark
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
-	@sleep 1s
 	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
-	@sleep 1s
 	@printf "Benchmark container: %s" $(CONTAINER_NAME)
 
 setup: clean
