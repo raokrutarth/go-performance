@@ -133,7 +133,7 @@ func benchmarkGenericSetParallel(set GenericSet, b *testing.B) {
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, generateItem(numItems))
+		items = append(items, GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
