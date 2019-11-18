@@ -11,14 +11,14 @@ BENCHMARK_BINARY := benchmark
 # when the container is started
 CONTAINER_NAME ?= go-performance_benchmark_1
 
-package: run run-package
+main: run run-package
 
-benchmark: run run-benchmark create-pprof-profiles
+test: run run-benchmark create-pprof-profiles
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
 	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
-	@printf "Benchmark container: %s\n" $(CONTAINER_NAME)
+	@printf "Benchmark Container ID: %s\n" $(CONTAINER_NAME)
 
 setup: clean
 	@docker-compose build --parallel --force-rm

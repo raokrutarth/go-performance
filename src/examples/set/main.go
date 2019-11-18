@@ -25,8 +25,8 @@ type Set interface {
 }
 
 func main() {
-	numItems := 500
-	itemSize := 2000
+	numItems := 100
+	itemSize := 10
 
 	telemetry.Initialize()
 
@@ -57,6 +57,7 @@ func main() {
 			}
 		}()
 
+		// wait for the add/remove cycle to finish
 		time.Sleep(10 * time.Second)
 	}
 
