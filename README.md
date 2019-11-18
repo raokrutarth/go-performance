@@ -18,16 +18,17 @@ Given a package containing _test.go file containing at least one Benchmark...() 
 
 `package main`
 
-Given a go package with a main() function, run the application on the container.
+Given a Go package with a main() function, run the application on the container.
+
 __Can import the telemetry package APIs to expose internal Golang runtime statistics or export internal numbers to the grafana dashboard.__
 
 ### Benchmarking `_test.go` files
 
-**If the benchmark or test can run for long enough** to see meaningful data on the system level charts, write a `_test.go` file (in a package if needed) and point Makefile to use the test file as below.
+**If the benchmark or test can run for long enough** to see meaningful data on the system level charts, write a `_test.go` file (in a new package) and point the Makefile to use the test file as below.
 
 ```Makefile
 make setup (only once)
-make test BENCHMARK_TARGET=example/set
+make test BENCHMARK_TARGET=examples/set
 ```
 
 ### Benchmarking Packages
