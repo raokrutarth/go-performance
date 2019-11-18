@@ -13,19 +13,21 @@ benchmark: run run-benchmark
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
+	sleep 1s
+	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
+	sellp 1s
+	@printf "Benchmark container: %s" $(CONTAINER_NAME)
 
 setup: clean
 	@docker-compose build --parallel --force-rm
 	-@mkdir ./profiles
 
 run-package: setup-benchmark-run
-	@$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
 	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)"
 	@docker exec -i $(CONTAINER_NAME) $(BENCHMARK_BINARY)
 
 
 run-benchmark: setup-benchmark-run
-	@$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
 	# compile the test to a binary
 	docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go test -c -i -o /bin/$(BENCHMARK_BINARY)"
 	# run the test as a binary to allow process_exporter stats
