@@ -2,8 +2,9 @@ package main
 
 import (
 	"math/rand"
-	"golang.performance.com/telemetry"
 	"time"
+
+	"golang.performance.com/telemetry"
 )
 
 /**
@@ -19,7 +20,7 @@ func main() {
 	summaryMetricName := "example_summary"
 
 	for {
-		// use the telemetry API to expose a summary metric
+		// use the telemetry API to expose a summary metric and observe a random value
 		telemetry.ExportVariableValue(summaryMetricName, rand.Float64())
 
 		// use the telemetry API to expose an in app counter

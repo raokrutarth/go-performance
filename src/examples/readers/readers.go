@@ -33,6 +33,7 @@ type Cache interface {
 
 func main() {
 	telemetry.Initialize()
+
 	cache := newMutexCache()
 	// cache := newChanCache()
 

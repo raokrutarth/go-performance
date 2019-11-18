@@ -40,7 +40,7 @@ Add the desired package containing a main function to src/ and set the package a
 
 ```Makefile
 make setup
-make package BENCHMARK_TARGET=src/examples/counters
+make package BENCHMARK_TARGET=examples/counters
 ```
 
 Run the container with
