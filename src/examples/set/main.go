@@ -56,6 +56,8 @@ func main() {
 				set.Remove(item)
 			}
 		}()
+
+		time.Sleep(10 * time.Second)
 	}
 
 }
