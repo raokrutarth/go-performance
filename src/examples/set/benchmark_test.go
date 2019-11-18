@@ -10,7 +10,7 @@ import (
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-const numItems = 500
+const numItems = 5
 
 var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -34,20 +34,20 @@ func BenchmarkTypedSetParallel(b *testing.B) {
 	benchmarkSetParallel(set, b)
 }
 
-func BenchmarkCheckedGenericSetParallel(b *testing.B) {
-	set := NewCheckedSet(reflect.String)
-	benchmarkGenericSetParallel(set, b)
-}
+// func BenchmarkCheckedGenericSetParallel(b *testing.B) {
+// 	set := NewCheckedSet(reflect.String)
+// 	benchmarkGenericSetParallel(set, b)
+// }
 
-func BenchmarkUnCheckedGenericSetParallel(b *testing.B) {
-	set := NewUncheckedSet(reflect.String)
-	benchmarkGenericSetParallel(set, b)
-}
+// func BenchmarkUnCheckedGenericSetParallel(b *testing.B) {
+// 	set := NewUncheckedSet(reflect.String)
+// 	benchmarkGenericSetParallel(set, b)
+// }
 
 func benchmarkSetParallel(set Set, b *testing.B) {
 	items := []string{}
 
-	for i := 0; i < 500; i++ {
+	for i := 0; i < numItems; i++ {
 		items = append(items, generateItem(numItems))
 	}
 
@@ -76,7 +76,7 @@ func benchmarkSet(set Set, b *testing.B) {
 
 	items := []string{}
 
-	for i := 0; i < 500; i++ {
+	for i := 0; i < numItems; i++ {
 		items = append(items, generateItem(numItems))
 	}
 
@@ -107,7 +107,7 @@ func benchmarkGenericSet(set GenericSet, b *testing.B) {
 
 	items := []string{}
 
-	for i := 0; i < 500; i++ {
+	for i := 0; i < numItems; i++ {
 		items = append(items, generateItem(numItems))
 	}
 
@@ -138,7 +138,7 @@ func benchmarkGenericSet(set GenericSet, b *testing.B) {
 func benchmarkGenericSetParallel(set GenericSet, b *testing.B) {
 	items := []string{}
 
-	for i := 0; i < 500; i++ {
+	for i := 0; i < numItems; i++ {
 		items = append(items, generateItem(numItems))
 	}
 

@@ -13,34 +13,46 @@ benchmark: run run-benchmark
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
-	@sleep 2s
-	@$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
 
 setup: clean
 	@docker-compose build --parallel --force-rm
 	-@mkdir ./profiles
 
 run-package: setup-benchmark-run
-	@docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./... && go build -o /bin/$(BENCHMARK_BINARY) ."
+	@$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
+	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)"
 	@docker exec -i $(CONTAINER_NAME) $(BENCHMARK_BINARY)
 
 
 run-benchmark: setup-benchmark-run
+	@$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
+	# compile the test to a binary
 	docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go test -c -i -o /bin/$(BENCHMARK_BINARY)"
+	# run the test as a binary to allow process_exporter stats
 	docker exec -i $(CONTAINER_NAME) $(BENCHMARK_BINARY) \
 		-test.v \
 		-test.bench=. \
-		-test.benchmem -test.memprofile=/memprofile.out \
-		-test.cpuprofile=/cpuprofile.out \
-		-test.mutexprofile=/mutexprofile.out \
-		-test.blockprofile=/blockprofile.out
-	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines /bin/$(BENCHMARK_BINARY) /memprofile.out > ./profiles/memory.pdf
-	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines -sample_index=inuse_space /bin/$(BENCHMARK_BINARY) /memprofile.out > ./profiles/in_use.pdf
-	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines -sample_index=alloc_space /bin/$(BENCHMARK_BINARY) /memprofile.out > ./profiles/allocated.pdf
+		-test.benchmem \
+		-test.memprofile=/profiles/memprofile.out \
+		-test.cpuprofile=/profiles/cpuprofile.out \
+		-test.mutexprofile=/profiles/mutexprofile.out \
+		-test.blockprofile=/profiles/blockprofile.out
 
-	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines /bin/$(BENCHMARK_BINARY) /cpuprofile.out > ./profiles/cpu.pdf
-	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines /bin/$(BENCHMARK_BINARY) /mutexprofile.out > ./profiles/mutex.pdf
-	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines /bin/$(BENCHMARK_BINARY) /blockprofile.out > ./profiles/block.pdf
+	# generate pprof profile PDFs
+	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines -sample_index=inuse_space \
+		/bin/$(BENCHMARK_BINARY) /profiles/memprofile.out > ./profiles/inuse_heap.pdf
+
+	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines -sample_index=alloc_space \
+		/bin/$(BENCHMARK_BINARY) /profiles/memprofile.out > ./profiles/allocated_heap.pdf
+
+	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines \
+		/bin/$(BENCHMARK_BINARY) /profiles/cpuprofile.out > ./profiles/cpu.pdf
+
+	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines \
+		/bin/$(BENCHMARK_BINARY) /profiles/mutexprofile.out > ./profiles/mutex.pdf
+
+	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines \
+		/bin/$(BENCHMARK_BINARY) /profiles/blockprofile.out > ./profiles/block.pdf
 
 
 setup-benchmark-run:
