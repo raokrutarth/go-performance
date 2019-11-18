@@ -7,16 +7,18 @@ BENCHMARK_TARGET := examples/set
 
 BENCHMARK_BINARY := benchmark
 
+# set a default name for the container that is re-computed
+# when the container is started
 CONTAINER_NAME ?= go-performance_benchmark_1
 
 package: run run-package
 
-benchmark: run run-benchmark
+benchmark: run run-benchmark create-pprof-profiles
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
 	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
-	@printf "Benchmark container: %s" $(CONTAINER_NAME)
+	@printf "Benchmark container: %s\n" $(CONTAINER_NAME)
 
 setup: clean
 	@docker-compose build --parallel --force-rm
@@ -40,6 +42,7 @@ run-benchmark: setup-benchmark-run
 		-test.mutexprofile=/profiles/mutexprofile.out \
 		-test.blockprofile=/profiles/blockprofile.out
 
+create-pprof-profiles:
 	# generate pprof profile PDFs
 	docker exec -i $(CONTAINER_NAME) go tool pprof -pdf -lines -sample_index=inuse_space \
 		/bin/$(BENCHMARK_BINARY) /profiles/memprofile.out > ./profiles/inuse_heap.pdf
