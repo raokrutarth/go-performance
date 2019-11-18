@@ -1,18 +1,12 @@
-package main
+package main_test
 
 import (
 	"fmt"
-	"math/rand"
 	"reflect"
 	"testing"
-	"time"
 )
 
-const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-
 const numItems = 500
-
-var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func BenchmarkTypedSet(b *testing.B) {
 	set := NewTypedSet()
@@ -48,7 +42,7 @@ func benchmarkSetParallel(set Set, b *testing.B) {
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, generateItem(numItems))
+		items = append(items, GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
@@ -77,7 +71,7 @@ func benchmarkSet(set Set, b *testing.B) {
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, generateItem(numItems))
+		items = append(items, GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
@@ -108,7 +102,7 @@ func benchmarkGenericSet(set GenericSet, b *testing.B) {
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, generateItem(numItems))
+		items = append(items, GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
@@ -161,15 +155,4 @@ func benchmarkGenericSetParallel(set GenericSet, b *testing.B) {
 			}
 		}()
 	}
-}
-
-func generateItem(size int) string {
-	b := make([]byte, size)
-	numChars := len(charset)
-
-	for i := range b {
-		b[i] = charset[seededRand.Intn(numChars)]
-	}
-
-	return string(b)
 }

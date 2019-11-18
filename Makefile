@@ -22,7 +22,8 @@ run:
 
 setup: clean
 	@docker-compose build --parallel --force-rm
-	-@mkdir ./profiles
+	-@mkdir ./profiles > /dev/null
+	@sleep 2s
 
 run-package: setup-benchmark-run
 	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)"
