@@ -1,6 +1,7 @@
 package main_test
 
 import (
+	"examples/set/main"
 	"fmt"
 	"reflect"
 	"testing"
@@ -14,22 +15,22 @@ import (
 const numItems = 500
 
 func BenchmarkTypedSet(b *testing.B) {
-	set := NewTypedSet()
+	set := main.NewTypedSet()
 	benchmarkSet(set, b)
 }
 
 func BenchmarkCheckedGenericSet(b *testing.B) {
-	set := NewCheckedSet(reflect.String)
+	set := main.NewCheckedSet(reflect.String)
 	benchmarkGenericSet(set, b)
 }
 
 func BenchmarkUnCheckedGenericSet(b *testing.B) {
-	set := NewUncheckedSet(reflect.String)
+	set := main.NewUncheckedSet(reflect.String)
 	benchmarkGenericSet(set, b)
 }
 
 func BenchmarkTypedSetParallel(b *testing.B) {
-	set := NewTypedSet()
+	set := main.NewTypedSet()
 	benchmarkSetParallel(set, b)
 }
 
@@ -43,11 +44,11 @@ func BenchmarkTypedSetParallel(b *testing.B) {
 // 	benchmarkGenericSetParallel(set, b)
 // }
 
-func benchmarkSetParallel(set Set, b *testing.B) {
+func benchmarkSetParallel(set main.Set, b *testing.B) {
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, GenerateItem(numItems))
+		items = append(items, main.GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
@@ -71,12 +72,12 @@ func benchmarkSetParallel(set Set, b *testing.B) {
 	}
 }
 
-func benchmarkSet(set Set, b *testing.B) {
+func benchmarkSet(set main.Set, b *testing.B) {
 
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, GenerateItem(numItems))
+		items = append(items, main.GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
@@ -102,12 +103,12 @@ func benchmarkSet(set Set, b *testing.B) {
 	}
 }
 
-func benchmarkGenericSet(set GenericSet, b *testing.B) {
+func benchmarkGenericSet(set main.GenericSet, b *testing.B) {
 
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, GenerateItem(numItems))
+		items = append(items, main.GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
@@ -134,11 +135,11 @@ func benchmarkGenericSet(set GenericSet, b *testing.B) {
 
 }
 
-func benchmarkGenericSetParallel(set GenericSet, b *testing.B) {
+func benchmarkGenericSetParallel(set main.GenericSet, b *testing.B) {
 	items := []string{}
 
 	for i := 0; i < numItems; i++ {
-		items = append(items, GenerateItem(numItems))
+		items = append(items, main.GenerateItem(numItems))
 	}
 
 	for i := 0; i < b.N; i++ {
