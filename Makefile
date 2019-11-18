@@ -26,7 +26,7 @@ setup: clean
 	@sleep 2s
 
 run-package: setup-benchmark-run
-	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)"
+	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
 	@docker exec -i $(CONTAINER_NAME) $(BENCHMARK_BINARY)
 
 
