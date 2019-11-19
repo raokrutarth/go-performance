@@ -20,7 +20,7 @@ run:
 	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
 	@printf "Benchmark Container ID: %s\n" $(CONTAINER_NAME)
 
-setup: clean
+setup: clean-collection-volumes
 	@docker-compose build --parallel --force-rm
 	-@mkdir ./profiles > /dev/null
 
@@ -69,12 +69,8 @@ copy-profiles:
 
 setup-benchmark-run:
 	-@docker exec -i $(CONTAINER_NAME) bash -c "pkill $(BENCHMARK_BINARY)"
-	# -@docker exec -i $(CONTAINER_NAME) bash -c "rm -rf /go/src/*"
 	@docker cp ./src/. $(CONTAINER_NAME):/go/src
 	@docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
-
-restart-process-exporter:
-	@docker exec -it $(CONTAINER_NAME) bash -c "pkill process_exporter"
 
 clean:
 	-@docker-compose down --remove-orphans
