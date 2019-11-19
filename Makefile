@@ -17,7 +17,7 @@ test: run run-test create-pprof-profiles copy-profiles
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
-	@sleep 3s
+	@sleep 5s
 	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
 	@printf "Benchmark Container ID: %s\n" $(CONTAINER_NAME)
 
