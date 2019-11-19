@@ -21,8 +21,9 @@ import (
 // var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 const (
-	maxTreeDepth       = 3
-	numChildrenPerNode = 100
+	maxTreeDepth       = 10
+	numChildrenPerNode = 150
+	nodeKeySize        = 100
 )
 
 const (
@@ -227,7 +228,7 @@ func doMarshalRuns(root interface{}, num int) []byte {
 
 // getRandomKey returns a random fixed size string
 func getRandomKey() string {
-	b := make([]byte, 32)
+	b := make([]byte, nodeKeySize)
 	for i := range b {
 		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
 	}
