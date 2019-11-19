@@ -3,7 +3,7 @@
 
 
 # path to the package relative to ./src/
-BENCHMARK_TARGET := examples/set
+BENCHMARK_TARGET := examples/readers
 
 BENCHMARK_BINARY := benchmark
 

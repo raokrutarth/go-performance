@@ -12,8 +12,8 @@ const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func main() {
-	numItems := 100
-	itemSize := 10
+	numItems := 1000000
+	itemSize := 10000
 
 	telemetry.Initialize()
 

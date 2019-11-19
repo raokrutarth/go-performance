@@ -23,7 +23,7 @@ const (
 
 	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	mapKeySizeBytes = 5000000
+	mapKeySizeBytes = 50
 )
 
 type Cache interface {
@@ -34,8 +34,8 @@ type Cache interface {
 func main() {
 	telemetry.Initialize()
 
-	cache := newMutexCache()
-	// cache := newChanCache()
+	// cache := newMutexCache()
+	cache := newChanCache()
 
 	// setup reader, setter and increasors on same keys
 	for i := 0; i < 300; i++ {
