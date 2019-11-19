@@ -21,8 +21,8 @@ import (
 // var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 const (
-	maxTreeDepth       = 5
-	numChildrenPerNode = 150
+	treeHeight         = 100
+	numChildrenPerNode = 3
 	nodeKeySize        = 100
 )
 
@@ -81,12 +81,12 @@ func mapTreeTest() {
 
 // makeSpannedMapTree constructs the tree of intended dimensions using nested maps
 func makeSpannedMapTree(parent map[string]interface{}, depth int) {
-	if depth == maxTreeDepth {
+	if depth == treeHeight {
 
 		parent[leafNodeKey] = make([]byte, 100)
 		telemetry.IncreaseRawValue(mapTreeLeaves, 1)
 
-	} else if depth < maxTreeDepth {
+	} else if depth < treeHeight {
 
 		for i := 0; i < numChildrenPerNode; i++ {
 
@@ -106,7 +106,7 @@ func makeSpannedMapTree(parent map[string]interface{}, depth int) {
 type treeNode struct {
 	name     string      `json:"TableName,string"`
 	children []*treeNode `json:"Children,omitempty"`
-	value    []byte      `json:"Value,omitempty"`
+	value    []byte      `json:"Value,omitempty"` // only for the leaf nodes
 }
 
 func structTreeTest() {
@@ -117,7 +117,7 @@ func structTreeTest() {
 }
 
 func makeSpannedStructTree(parent *treeNode, depth int) {
-	if depth == maxTreeDepth {
+	if depth == treeHeight {
 		leafNode := &treeNode{
 			name:  leafNodeKey,
 			value: make([]byte, 100),
@@ -125,7 +125,7 @@ func makeSpannedStructTree(parent *treeNode, depth int) {
 		parent.children = append(parent.children, leafNode)
 		telemetry.IncreaseRawValue(structTreeLeaves, 1)
 
-	} else if depth < maxTreeDepth {
+	} else if depth < treeHeight {
 
 		for i := 0; i < numChildrenPerNode; i++ {
 
