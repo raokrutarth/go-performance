@@ -23,7 +23,6 @@ run:
 setup: clean
 	@docker-compose build --parallel --force-rm
 	-@mkdir ./profiles > /dev/null
-	@sleep 2s
 
 run-main: setup-benchmark-run
 	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
@@ -70,8 +69,8 @@ copy-profiles:
 
 setup-benchmark-run:
 	-@docker exec -i $(CONTAINER_NAME) bash -c "pkill $(BENCHMARK_BINARY)"
-	-@docker exec -i $(CONTAINER_NAME) bash -c "rm -rf /go/src/*"
-	@docker cp ./src $(CONTAINER_NAME):/go
+	# -@docker exec -i $(CONTAINER_NAME) bash -c "rm -rf /go/src/*"
+	@docker cp ./src/. $(CONTAINER_NAME):/go/src
 	@docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
 
 restart-process-exporter:
