@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"reflect"
+	"sync"
 	"time"
 
 	"golang.performance.com/telemetry"
@@ -29,26 +30,40 @@ func main() {
 	}
 
 	for {
+		var waitgroup sync.WaitGroup
+
 		go func() {
+			waitgroup.Add(1)
 			for _, item := range items {
 				set.Add(item)
 			}
+			waitgroup.Done()
 		}()
 
 		go func() {
+			waitgroup.Add(1)
 			for _, item := range items {
 				set.IsIn(item)
 			}
+			waitgroup.Done()
 		}()
 
 		go func() {
+			waitgroup.Add(1)
 			for _, item := range items {
 				set.Remove(item)
 			}
+			waitgroup.Done()
 		}()
+
+		// wait until all the goroutines are completed
+		waitgroup.Wait()
+
+		telemetry.IncreaseRawValue("num_cycles", 1)
 
 		// wait for the add/remove cycle to finish
 		time.Sleep(10 * time.Second)
+
 	}
 
 }
