@@ -9,11 +9,10 @@ EXPOSE 5000
 RUN apt-get update
 RUN apt install -y python-pydot python-pydot-ng graphviz
 
-RUN mkdir /exporters
 RUN mkdir /profiles
 
-COPY ./collector/node_exporter/node_exporter /exporters
-COPY ./collector/process_exporter/process_exporter /exporters/
+COPY ./collector/node_exporter/node_exporter /bin
+COPY ./collector/process_exporter/process_exporter /bin
 
 COPY ./benchmark-init.sh /
 

@@ -27,7 +27,7 @@ setup: clean
 
 run-main: setup-benchmark-run
 	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
-	@docker exec -i $(CONTAINER_NAME) $(BENCHMARK_BINARY)
+	@docker exec -d $(CONTAINER_NAME) $(BENCHMARK_BINARY)
 
 
 run-test: setup-benchmark-run
@@ -73,6 +73,9 @@ setup-benchmark-run:
 	-@docker exec -i $(CONTAINER_NAME) bash -c "rm -rf /go/src/*"
 	@docker cp ./src $(CONTAINER_NAME):/go
 	@docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
+
+restart-process-exporter:
+	@docker exec -it $(CONTAINER_NAME) bash -c "pkill process_exporter"
 
 clean:
 	-@docker-compose down --remove-orphans
