@@ -13,7 +13,7 @@ CONTAINER_NAME ?= go-performance_benchmark_1
 
 main: run run-package
 
-test: run run-benchmark create-pprof-profiles
+test: run run-benchmark create-pprof-profiles copy-profiles
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
@@ -41,7 +41,8 @@ run-benchmark: setup-benchmark-run
 		-test.memprofile=/profiles/memprofile.out \
 		-test.cpuprofile=/profiles/cpuprofile.out \
 		-test.mutexprofile=/profiles/mutexprofile.out \
-		-test.blockprofile=/profiles/blockprofile.out
+		-test.blockprofile=/profiles/blockprofile.out \
+		-test.trace=/profiles/trace.out
 
 create-pprof-profiles:
 	# generate pprof profile PDFs
@@ -61,12 +62,17 @@ create-pprof-profiles:
 		/bin/$(BENCHMARK_BINARY) /profiles/blockprofile.out > ./profiles/block.pdf
 
 
+# copy-profiles copies the raw, PDF profiles and binaries from the container
+# to the host machine
+copy-profiles:
+	docker cp $(CONTAINER_NAME):/profiles/. ./profiles
+	docker cp $(CONTAINER_NAME):/bin/$(BENCHMARK_BINARY) ./profiles
+
 setup-benchmark-run:
 	-@docker exec -i $(CONTAINER_NAME) bash -c "pkill $(BENCHMARK_BINARY)"
 	-@docker exec -i $(CONTAINER_NAME) bash -c "rm -rf /go/src/*"
 	@docker cp ./src $(CONTAINER_NAME):/go
 	@docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
-
 
 clean:
 	-@docker-compose down --remove-orphans

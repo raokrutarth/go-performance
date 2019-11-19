@@ -2,7 +2,6 @@ package main
 
 import (
 	"math/rand"
-	"reflect"
 	"time"
 
 	"golang.performance.com/telemetry"
@@ -12,25 +11,13 @@ const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 
-type GenericSet interface {
-	Add(item interface{})
-	IsIn(item interface{}) bool
-	Remove(item interface{})
-}
-
-type Set interface {
-	Add(string)
-	IsIn(string) bool
-	Remove(string)
-}
-
 func main() {
 	numItems := 100
 	itemSize := 10
 
 	telemetry.Initialize()
 
-	set := NewUncheckedSet(reflect.String)
+	set := NewUncheckedSet()
 
 	items := []string{}
 

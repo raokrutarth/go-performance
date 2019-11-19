@@ -6,6 +6,11 @@ import (
 	"sync"
 )
 
+/**
+	Set API that checks the type of the item being added
+	so only one type of item can be added to the set
+**/
+
 // Set generic set type
 type CheckedSet struct {
 	data map[interface{}]struct{}
@@ -53,8 +58,6 @@ func (cs *CheckedSet) IsIn(val interface{}) bool {
 
 	cs.RLock()
 	defer cs.RUnlock()
-	if _, present := cs.data[val]; present {
-		return true
-	}
-	return false
+	_, present := cs.data[val]
+	return present
 }
