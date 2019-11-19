@@ -21,7 +21,7 @@ import (
 // var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 const (
-	treeHeight         = 15
+	treeHeight         = 11
 	numChildrenPerNode = 4
 	nodeKeySize        = 100
 )
