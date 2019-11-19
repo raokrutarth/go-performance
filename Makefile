@@ -11,9 +11,9 @@ BENCHMARK_BINARY := benchmark
 # when the container is started
 CONTAINER_NAME ?= go-performance_benchmark_1
 
-main: run run-package
+main: run run-main
 
-test: run run-benchmark create-pprof-profiles copy-profiles
+test: run run-test create-pprof-profiles copy-profiles
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
@@ -25,12 +25,12 @@ setup: clean
 	-@mkdir ./profiles > /dev/null
 	@sleep 2s
 
-run-package: setup-benchmark-run
+run-main: setup-benchmark-run
 	@docker exec -i $(CONTAINER_NAME) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
 	@docker exec -i $(CONTAINER_NAME) $(BENCHMARK_BINARY)
 
 
-run-benchmark: setup-benchmark-run
+run-test: setup-benchmark-run
 	# compile the test to a binary
 	docker exec -i $(CONTAINER_NAME) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go test -c -i -o /bin/$(BENCHMARK_BINARY)"
 	# run the test as a binary to allow process_exporter stats

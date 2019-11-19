@@ -2,6 +2,7 @@ package main
 
 import (
 	"math/rand"
+	"reflect"
 	"time"
 
 	"golang.performance.com/telemetry"
@@ -17,7 +18,7 @@ func main() {
 
 	telemetry.Initialize()
 
-	set := NewUncheckedSet()
+	set := CheckedSet(reflect.String)
 
 	items := []string{}
 
