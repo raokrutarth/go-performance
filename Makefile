@@ -80,7 +80,7 @@ setup-benchmark-run:
 	# copy/overwrite Go sources to container
 	@docker cp ./src/. $(CONTAINER_ID):/go/src
 
-	# install any dependencies needed by the target package
+	# install dependencies, if needed, by the target package
 	@docker exec -i $(CONTAINER_ID) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
 
 clean:

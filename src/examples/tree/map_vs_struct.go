@@ -1,15 +1,14 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"math/rand"
 	"runtime"
 	"runtime/debug"
 	"time"
 
+	json "github.com/json-iterator/go"
 	"golang.performance.com/telemetry"
-	// jsoniter "github.com/json-iterator/go"
 )
 
 /**
@@ -18,11 +17,9 @@ import (
 
 **/
 
-// var json = jsoniter.ConfigCompatibleWithStandardLibrary
-
 const (
 	treeHeight         = 11
-	numChildrenPerNode = 4
+	numChildrenPerNode = 10
 	nodeKeySize        = 100
 )
 
@@ -63,7 +60,10 @@ func main() {
 		}
 
 		telemetry.IncreaseRawValue(testCounterTag, 1)
+
 		telemetry.SetRawValue(mapTreeLeaves, 0)
+		telemetry.SetRawValue(structTreeLeaves, 0)
+
 		telemetry.SetRawValue(eventTag, 0)
 
 		debug.FreeOSMemory()
@@ -144,8 +144,11 @@ func makeSpannedStructTree(parent *treeNode, depth int) {
 	}
 }
 
-// marshalSpannedStructTree is the custom JSON marshaler to traverse the tree
-// can take 30m+ and 10GB+ with a 3.2mil leaf node tree
+// marshalSpannedStructTree is the custom JSON marshal simulation for a
+// tree constructed with node structs and pointers.
+// The native JSON library does not traverse pointer based structs
+// during marshalling. Therefore, traverse each node manually and marshal.
+// [Can take 30m+ and 10GB+ with a 3.2mil leaf node tree]
 func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
 	res := []byte{}
 
