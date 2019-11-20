@@ -63,6 +63,9 @@ func main() {
 		}
 
 		telemetry.IncreaseRawValue(testCounterTag, 1)
+		telemetry.SetRawValue(mapTreeLeaves, 0)
+		telemetry.SetRawValue(eventTag, 0)
+
 		debug.FreeOSMemory()
 		time.Sleep(10 * time.Second)
 	}
