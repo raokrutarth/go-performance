@@ -11,8 +11,6 @@ BENCHMARK_BINARY := benchmark
 # when the container is started
 CONTAINER_NAME ?= go-performance_benchmark_1
 
-check_var := "docker-compose ps -q benchmark"
-
 main: run run-main
 
 test: run run-test create-pprof-profiles copy-profiles
@@ -23,7 +21,7 @@ run:
 	while [ -z "$$(docker-compose ps -q benchmark)" ]; do sleep 1s; done
 
 	# Set the global variable to the container ID
-	$(eval CONTAINER_NAME := $$(docker-compose ps -q benchmark))
+	$(eval CONTAINER_NAME = $(shell docker-compose ps -q benchmark))
 	@printf "Benchmark Container ID: %s\n" $(CONTAINER_NAME)
 
 setup: clean-collection-volumes
