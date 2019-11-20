@@ -21,7 +21,7 @@ run:
 	while [ -z "$$(docker-compose ps -q benchmark)" ]; do sleep 1s; done
 
 	# Set the global variable to the container ID
-	$(eval CONTAINER_NAME = $(shell docker-compose ps -q benchmark))
+	CONTAINER_NAME = $(shell docker-compose ps -q benchmark)
 	@printf "Benchmark Container ID: %s\n" $(CONTAINER_NAME)
 
 setup: clean-collection-volumes
