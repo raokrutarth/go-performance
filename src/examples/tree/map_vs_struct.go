@@ -8,6 +8,7 @@ import (
 	"time"
 
 	json "github.com/json-iterator/go"
+	// "encoding/json"
 	"golang.performance.com/telemetry"
 )
 
@@ -15,11 +16,12 @@ import (
 	test to check the memory performance of a tree (of same size)
 	constructed with nested maps and custom structs
 
+	jsoniter usage: https://github.com/sudo-suhas/bulk-marshal/blob/378738a02807145a41d50e82fd8a31caf87236f2/jsonutil/jsoniter_wrapper.go
 **/
 
 const (
-	treeHeight         = 11
-	numChildrenPerNode = 10
+	treeHeight         = 12
+	numChildrenPerNode = 3
 	nodeKeySize        = 100
 )
 
