@@ -11,6 +11,8 @@ BENCHMARK_BINARY := benchmark
 # when the container is started
 CONTAINER_NAME ?= go-performance_benchmark_1
 
+check_var := "docker-compose ps -q benchmark"
+
 main: run run-main
 
 test: run run-test create-pprof-profiles copy-profiles
@@ -18,7 +20,7 @@ test: run run-test create-pprof-profiles copy-profiles
 run:
 	@docker-compose up --no-build --detach --remove-orphans
 	# wait until benchmark service from docker-compose is a running container
-	until [ "`$(docker-compose ps -q benchmark)`" ]; do sleep 1s; done
+	until [ "$$(docker-compose ps -q benchmark)" ]; do sleep 1s; done
 
 	# Set the global variable to the container ID
 	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
