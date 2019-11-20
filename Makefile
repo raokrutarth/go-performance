@@ -17,8 +17,9 @@ test: run run-test create-pprof-profiles copy-profiles
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
+
 	# wait until benchmark service from docker-compose is up
-	@$(shell until docker-compose ps -q benchmark; do sleep 1s; done)
+	@until docker-compose ps -q benchmark; do sleep 1s; done
 
 	# Set the global variable to the container ID
 	$(eval CONTAINER_NAME := $(shell docker-compose ps -q benchmark))
