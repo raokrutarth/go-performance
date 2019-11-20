@@ -21,7 +21,7 @@ import (
 
 const (
 	treeHeight         = 12
-	numChildrenPerNode = 3
+	numChildrenPerNode = 6
 	nodeKeySize        = 100
 )
 
