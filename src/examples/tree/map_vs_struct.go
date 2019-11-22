@@ -16,7 +16,8 @@ import (
 	test to check the memory performance of a tree (of same size)
 	constructed with nested maps vs. custom structs
 
-	jsoniter usage: https://github.com/sudo-suhas/bulk-marshal/blob/378738a02807145a41d50e82fd8a31caf87236f2/jsonutil/jsoniter_wrapper.go
+	jsoniter usage:
+	https://github.com/sudo-suhas/bulk-marshal/blob/378738a02807145a41d50e82fd8a31caf87236f2/jsonutil/jsoniter_wrapper.go
 **/
 
 const (
@@ -24,7 +25,7 @@ const (
 	numChildrenPerNode = 6
 	nodeKeySize        = 100
 	leafValueSize      = 50
-	testMarshalRuns    = false
+	testMarshalRuns    = true
 )
 
 const (
@@ -154,40 +155,6 @@ func makeSpannedStructTree(parent *treeNode, depth int) {
 		}
 
 	}
-}
-
-// marshalSpannedStructTree is the custom JSON marshal SIMULATION for a
-// tree constructed with node structs and pointers.
-// The native JSON library does not traverse pointer based nested structs
-// during marshalling. Therefore, traverse each node manually and marshal.
-// [Can take 30m+ and 10GB+ with a 3.2mil leaf node tree]
-func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
-	res := []byte{}
-
-	dequeue := []*treeNode{root}
-
-	for len(dequeue) > 0 {
-		// pop
-		currNode, dequeue := dequeue[0], dequeue[1:]
-
-		if currNode.Name == leafNodeKey {
-			// seeing a leaf node with a []byte value
-			// append the bytes of the leaf value to simulated result
-			res = append(res, currNode.Value...)
-			continue
-		}
-		b, err := json.Marshal(*currNode)
-		if err != nil {
-			return res, err
-		}
-		res = append(res, b...)
-
-		for _, child := range currNode.Children {
-			// enqueue
-			dequeue = append(dequeue, child)
-		}
-	}
-	return res, nil
 }
 
 // MarshalsAndWait sets event flags in the graph for correlation of

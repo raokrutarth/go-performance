@@ -1,37 +1,48 @@
 package main
 
-import (
-	"encoding/json"
-	"fmt"
-)
+import "encoding/json"
 
 // treeNode can wither have children (and no value) or a value
-type treeNode struct {
-	Name     string      `json:"TableName,string"`
-	Children []*treeNode `json:"Children,omitempty"`
-	Value    []byte      `json:"Value,omitempty"` // only for the leaf nodes
+type PointerNode struct {
+	Name     string         `json:"TableName,string"`
+	Children []*PointerNode `json:"Children,omitempty"`
+	Value    []byte         `json:"Value,omitempty"` // only for the leaf nodes
 }
 
-func makeNestedNodesWithPointers() *treeNode {
-	root := &treeNode{Name: "root", Children: []*treeNode{}}
-	left := &treeNode{Name: "left_leaf", Value: []byte{1}}
-	right := &treeNode{Name: "right_leaf", Value: []byte{2}}
+func makeNestedNodesWithPointers() *PointerNode {
+	root := &PointerNode{Name: "root", Children: []*PointerNode{}}
+	left := &PointerNode{Name: "left_leaf", Value: []byte{1}}
+	right := &PointerNode{Name: "right_leaf", Value: []byte{2}}
 
 	root.Children = append(root.Children, left, right)
 
 	return root
 }
 
-func main() {
-	tree := makeNestedNodesWithPointers()
+func marshalTreeWithPointers(tree *PointerNode) []byte {
 
-	fmt.Printf("Tree: %+v\n\n", tree)
+	b, err := json.Marshal(tree)
+	if err != nil {
+		panic(err)
+	}
+	return b
 
-	b, err := json.Marshal(&tree)
-	if err != nil || len(b) == 0 {
+}
+
+// unMarshalTreeWithPointers needs to go through each child pointer
+// and create a new child object instead of pointing to the old one
+func unMarshalTreeWithPointers(b []byte) *PointerNode {
+	oldTree := &PointerNode{}
+	err := json.Unmarshal(b, &oldTree)
+	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("JSON string: %s\n", string(b))
+	newTree := PointerNode{
+		Name: oldTree.Name,
+	}
 
+	newTree.Children = append(newTree.Children, oldTree.Children...)
+
+	return &newTree
 }
