@@ -14,15 +14,17 @@ import (
 
 /**
 	test to check the memory performance of a tree (of same size)
-	constructed with nested maps and custom structs
+	constructed with nested maps vs. custom structs
 
 	jsoniter usage: https://github.com/sudo-suhas/bulk-marshal/blob/378738a02807145a41d50e82fd8a31caf87236f2/jsonutil/jsoniter_wrapper.go
 **/
 
 const (
-	treeHeight         = 12
+	treeHeight         = 3
 	numChildrenPerNode = 6
 	nodeKeySize        = 100
+	leafValueSize      = 50
+	testMarshalRuns    = false
 )
 
 const (
@@ -48,6 +50,9 @@ const (
 	main function that infinitely runs the chosen test
 **/
 func main() {
+
+	debug.SetGCPercent(25) // hack to see if CPU usage is impacted significantly
+
 	telemetry.Initialize()
 
 	telemetry.SetRawValue(testCounterTag, 0)
@@ -81,14 +86,17 @@ func mapTreeTest() {
 	root := make(map[string]interface{})
 	makeSpannedMapTree(root, 0)
 
-	MarshalsAndWait(root, "map")
+	if testMarshalRuns {
+		MarshalsAndWait(root, "map_nodes")
+	}
+
 }
 
 // makeSpannedMapTree constructs the tree of intended dimensions using nested maps
 func makeSpannedMapTree(parent map[string]interface{}, depth int) {
 	if depth == treeHeight {
 
-		parent[leafNodeKey] = make([]byte, 100)
+		parent[leafNodeKey] = getRandomValue(leafValueSize)
 		telemetry.IncreaseRawValue(mapTreeLeaves, 1)
 
 	} else if depth < treeHeight {
@@ -109,25 +117,27 @@ func makeSpannedMapTree(parent map[string]interface{}, depth int) {
 
 // treeNode can wither have children (and no value) or a value
 type treeNode struct {
-	name     string      `json:"TableName,string"`
-	children []*treeNode `json:"Children,omitempty"`
-	value    []byte      `json:"Value,omitempty"` // only for the leaf nodes
+	Name     string      `json:"TableName,string"`
+	Children []*treeNode `json:"Children,omitempty"`
+	Value    []byte      `json:"Value,omitempty"` // only for the leaf nodes
 }
 
 func structTreeTest() {
-	root := &treeNode{name: "root", children: []*treeNode{}}
+	root := &treeNode{Name: "root", Children: []*treeNode{}}
 	makeSpannedStructTree(root, 0)
 
-	MarshalsAndWait(root, "non_interface struct")
+	if testMarshalRuns {
+		MarshalsAndWait(root, "struct_nodes")
+	}
 }
 
 func makeSpannedStructTree(parent *treeNode, depth int) {
 	if depth == treeHeight {
 		leafNode := &treeNode{
-			name:  leafNodeKey,
-			value: make([]byte, 100),
+			Name:  leafNodeKey,
+			Value: getRandomValue(leafValueSize),
 		}
-		parent.children = append(parent.children, leafNode)
+		parent.Children = append(parent.Children, leafNode)
 		telemetry.IncreaseRawValue(structTreeLeaves, 1)
 
 	} else if depth < treeHeight {
@@ -135,10 +145,10 @@ func makeSpannedStructTree(parent *treeNode, depth int) {
 		for i := 0; i < numChildrenPerNode; i++ {
 
 			newNode := &treeNode{
-				name:     getRandomKey(),
-				children: []*treeNode{},
+				Name:     getRandomKey(),
+				Children: []*treeNode{},
 			}
-			parent.children = append(parent.children, newNode)
+			parent.Children = append(parent.Children, newNode)
 			makeSpannedStructTree(newNode, depth+1)
 
 		}
@@ -146,9 +156,9 @@ func makeSpannedStructTree(parent *treeNode, depth int) {
 	}
 }
 
-// marshalSpannedStructTree is the custom JSON marshal simulation for a
+// marshalSpannedStructTree is the custom JSON marshal SIMULATION for a
 // tree constructed with node structs and pointers.
-// The native JSON library does not traverse pointer based structs
+// The native JSON library does not traverse pointer based nested structs
 // during marshalling. Therefore, traverse each node manually and marshal.
 // [Can take 30m+ and 10GB+ with a 3.2mil leaf node tree]
 func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
@@ -160,9 +170,10 @@ func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
 		// pop
 		currNode, dequeue := dequeue[0], dequeue[1:]
 
-		if currNode.name == leafNodeKey {
-			// seeing a child of type byte[]
-			res = append(res, currNode.value...)
+		if currNode.Name == leafNodeKey {
+			// seeing a leaf node with a []byte value
+			// append the bytes of the leaf value to simulated result
+			res = append(res, currNode.Value...)
 			continue
 		}
 		b, err := json.Marshal(*currNode)
@@ -171,7 +182,7 @@ func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
 		}
 		res = append(res, b...)
 
-		for _, child := range currNode.children {
+		for _, child := range currNode.Children {
 			// enqueue
 			dequeue = append(dequeue, child)
 		}
@@ -183,15 +194,8 @@ func marshalSpannedStructTree(root *treeNode) ([]byte, error) {
 // events to memory consumption during marshaling
 func MarshalsAndWait(root interface{}, testName string) {
 
-	telemetry.SetRawValue(eventTag, treeBuildCompleteEvent) // set event identifier in graph
-	runtime.GC()                                            // flush the GC so only the tree is occupying memory
-	telemetry.SetRawValue(eventTag, postTreeBuildGCFinish)  // set event identifier in graph
-
-	log.Printf("[+] spanned %s tree constructed. Only tree object is occupying memory\n", testName)
-	time.Sleep(45 * time.Second)
-
+	postTreeConstructionActions(testName)
 	log.Printf("[+] pre-marshal wait complete. Marshaling\n")
-	telemetry.SetRawValue(eventTag, preMarshalEvent) // set event identifier in graph
 
 	marshaledBytes := doMarshalRuns(root, 5)
 
@@ -201,8 +205,19 @@ func MarshalsAndWait(root interface{}, testName string) {
 
 	// stay alive with only JSON result in memory so memory stats can be scraped
 	log.Printf("[+] Only marshal result is in memory. Waiting...\n")
-	time.Sleep(3 * time.Minute)
+	time.Sleep(6 * time.Minute)
 	log.Printf("len: %d\nValue: \n%+v", len(marshaledBytes), marshaledBytes)
+}
+
+func postTreeConstructionActions(testName string) {
+	telemetry.SetRawValue(eventTag, treeBuildCompleteEvent) // set event identifier in graph
+	debug.FreeOSMemory()                                    // flush the GC so only the tree is occupying memory
+	telemetry.SetRawValue(eventTag, postTreeBuildGCFinish)  // set event identifier in graph
+
+	log.Printf("[+] spanned %s tree constructed. Only tree object is occupying memory\n", testName)
+	time.Sleep(45 * time.Second)
+
+	telemetry.SetRawValue(eventTag, preMarshalEvent) // set event identifier in graph
 }
 
 // doMarshalRuns marshals the passed tree num times and returns
@@ -215,11 +230,7 @@ func doMarshalRuns(root interface{}, num int) []byte {
 	for i := 0; i < num; i++ {
 
 		// marshal based on tree type
-		if st, ok := root.(*treeNode); ok {
-			b, err = marshalSpannedStructTree(st) // BAD
-		} else {
-			b, err = json.Marshal(root)
-		}
+		b, err = json.Marshal(root)
 
 		if err != nil {
 			log.Fatalf("unable to Marshal. Exiting...")
@@ -241,4 +252,12 @@ func getRandomKey() string {
 		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
 	}
 	return string(b)
+}
+
+func getRandomValue(size int) []byte {
+	b := make([]byte, size)
+	for i := range b {
+		b[i] = letterBytes[rand.Int63()%int64(len(letterBytes))]
+	}
+	return b
 }

@@ -3,13 +3,18 @@
 
 
 # path to the package relative to ./src/
-BENCHMARK_TARGET := examples/tree
+BENCHMARK_TARGET := examples/nested_structs
 
 BENCHMARK_BINARY := benchmark
 
 # set a default name for the container that is re-computed
 # when the container is started
-CONTAINER_ID ?= go-performance_benchmark_1
+CONTAINER_ID ?= UNDEFINED
+
+setup: clean-collection-volumes
+	@docker-compose build --parallel --force-rm
+	@mkdir -p ./profiles
+
 
 main: run run-main
 
@@ -23,16 +28,13 @@ run:
 	# Get the dynamically assigned container ID
 	$(eval CONTAINER_ID = `docker-compose ps -q benchmark`)
 	@printf "Benchmark Container ID: %s\n" $(CONTAINER_ID)
-
-setup: clean-collection-volumes
-	@docker-compose build --parallel --force-rm
-	-@mkdir ./profiles > /dev/null
+	@printf "Benchmark target: %s" $(BENCHMARK_TARGET)
 
 run-main: setup-benchmark-run
 	@docker exec -i $(CONTAINER_ID) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
 
 	# run the benchmark binary within the container in detached mode
-	@docker exec -d $(CONTAINER_ID) $(BENCHMARK_BINARY)
+	@docker exec -i $(CONTAINER_ID) $(BENCHMARK_BINARY)
 
 
 run-test: setup-benchmark-run
