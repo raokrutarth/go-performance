@@ -21,11 +21,13 @@ import (
 **/
 
 const (
-	treeHeight         = 3
-	numChildrenPerNode = 6
-	nodeKeySize        = 100
-	leafValueSize      = 50
-	testMarshalRuns    = true
+	treeHeight         = 4
+	numChildrenPerNode = 50
+
+	nodeKeySize   = 50
+	leafValueSize = 100
+
+	testMarshalRuns = true
 )
 
 const (
@@ -194,18 +196,16 @@ func doMarshalRuns(root interface{}, num int) []byte {
 
 	// marshal a few times to get highest memory peak
 	for i := 0; i < num; i++ {
-
-		// marshal based on tree type
 		b, err = json.Marshal(root)
-
-		if err != nil {
-			log.Fatalf("unable to Marshal. Exiting...")
-		}
-
-		telemetry.IncreaseRawValue(eventTag, 10) // add to event identifier in graph
 
 		log.Printf("[+] Finished marshal iteration %d. Flushing GC to let only marshal result persist\n", i)
 		runtime.GC() // flush the GC to remove the tree/old marshal result from memory
+
+		if err != nil {
+			panic(err)
+		}
+
+		telemetry.IncreaseRawValue(eventTag, 5) // add to event identifier in graph
 	}
 
 	return b

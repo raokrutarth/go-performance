@@ -86,7 +86,7 @@ setup-benchmark-run:
 	@docker exec -i $(CONTAINER_ID) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
 
 set-resource-limits:
-	# limit prometheus container to 4 cores
+	# limit prometheus container to CPU 4 cores
 	docker update $$(docker-compose ps -q prometheus) --cpus 4
 
 
