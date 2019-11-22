@@ -3,7 +3,7 @@
 
 
 # path to the package relative to ./src/
-BENCHMARK_TARGET := examples/nested_structs
+BENCHMARK_TARGET := examples/tree
 
 BENCHMARK_BINARY := benchmark
 
