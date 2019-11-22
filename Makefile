@@ -34,7 +34,7 @@ run-main: setup-benchmark-run
 	@docker exec -i $(CONTAINER_ID) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
 
 	# run the benchmark binary within the container in detached mode
-	@docker exec -i $(CONTAINER_ID) $(BENCHMARK_BINARY)
+	@docker exec -d $(CONTAINER_ID) $(BENCHMARK_BINARY)
 
 
 run-test: setup-benchmark-run
@@ -84,6 +84,11 @@ setup-benchmark-run:
 
 	# install dependencies, if needed, by the target package
 	@docker exec -i $(CONTAINER_ID) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
+
+set-resource-limits:
+	# limit prometheus container to 4 cores
+	docker update $$(docker-compose ps -q prometheus) --cpus 4
+
 
 clean:
 	-@docker-compose down --remove-orphans

@@ -173,7 +173,6 @@ func MarshalsAndWait(root interface{}, testName string) {
 	// stay alive with only JSON result in memory so memory stats can be scraped
 	log.Printf("[+] Only marshal result is in memory. Waiting...\n")
 	time.Sleep(6 * time.Minute)
-	log.Printf("len: %d\nValue: \n%+v", len(marshaledBytes), marshaledBytes)
 }
 
 func postTreeConstructionActions(testName string) {
