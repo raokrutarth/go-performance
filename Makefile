@@ -28,7 +28,7 @@ run:
 	# Get the dynamically assigned container ID
 	$(eval CONTAINER_ID = `docker-compose ps -q benchmark`)
 	@printf "Benchmark Container ID: %s\n" $(CONTAINER_ID)
-	@printf "Benchmark target: %s" $(BENCHMARK_TARGET)
+	@printf "Benchmark target: %s\n" $(BENCHMARK_TARGET)
 
 run-main: setup-benchmark-run
 	@docker exec -i $(CONTAINER_ID) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
