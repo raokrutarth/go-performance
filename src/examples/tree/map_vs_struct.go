@@ -13,7 +13,7 @@ import (
 )
 
 /**
-	test to check the memory performance of a tree (of same size)
+	test to check the memory performance of a tree (of same dimension and data)
 	constructed with nested maps vs. custom structs
 
 	jsoniter usage:
@@ -24,10 +24,10 @@ const (
 	treeHeight         = 4
 	numChildrenPerNode = 50
 
-	nodeKeySize   = 50
-	leafValueSize = 100
+	nodeKeySize   = 50  // size of node ID in bytes
+	leafValueSize = 100 // size of leaf node's value field in bytes
 
-	testMarshalRuns = true
+	testMarshalRuns = true // runs json.Marshal on the trees when true
 )
 
 const (
@@ -37,10 +37,8 @@ const (
 	letterBytes      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 	// counter value with this tag increases to correlate events in the test with the memory chart
-	eventTag = "eventCounter"
-
-	testCounterTag = "num_tests"
-
+	eventTag            = "eventCounter"
+	testCounterTag      = "num_tests"
 	marshalResultLenTag = "marshal_result_bytes"
 
 	treeBuildCompleteEvent = 50
@@ -73,6 +71,7 @@ func main() {
 
 		telemetry.SetRawValue(mapTreeLeaves, 0)
 		telemetry.SetRawValue(structTreeLeaves, 0)
+		telemetry.SetRawValue(marshalResultLenTag, 0)
 
 		telemetry.SetRawValue(eventTag, 0)
 
@@ -90,7 +89,7 @@ func mapTreeTest() {
 	makeSpannedMapTree(root, 0)
 
 	if testMarshalRuns {
-		MarshalsAndWait(root, "map_nodes")
+		MarshalsAndWait(root, "map_tree")
 	}
 
 }
@@ -130,7 +129,7 @@ func structTreeTest() {
 	makeSpannedStructTree(root, 0)
 
 	if testMarshalRuns {
-		MarshalsAndWait(root, "struct_nodes")
+		MarshalsAndWait(root, "struct_tree")
 	}
 }
 
