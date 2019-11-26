@@ -39,7 +39,7 @@ const (
 	// counter value with this tag increases to correlate events in the test with the memory chart
 	eventTag            = "eventCounter"
 	testCounterTag      = "num_tests"
-	marshalResultLenTag = "marshal_result_bytes"
+	marshalResultLenTag = "marshal_result_bytes_"
 
 	treeBuildCompleteEvent = 50
 	postTreeBuildGCFinish  = 100
@@ -51,8 +51,6 @@ const (
 	main function that infinitely runs the chosen test
 **/
 func main() {
-
-	debug.SetGCPercent(5) // hack to see if CPU usage is impacted significantly
 
 	telemetry.Initialize()
 
@@ -168,12 +166,17 @@ func MarshalsAndWait(root interface{}, testName string) {
 	marshaledBytes := doMarshalRuns(root, 5)
 
 	log.Printf("[+] Marshal runs complete. Result length: %d\n", len(marshaledBytes))
-	telemetry.SetRawValue(eventTag, postMarshalEvent)                        // set event identifier in graph
-	telemetry.SetRawValue(marshalResultLenTag, float64(len(marshaledBytes))) // send result length to graph
+	telemetry.SetRawValue(eventTag, postMarshalEvent)                                 // set event identifier in graph
+	telemetry.SetRawValue(marshalResultLenTag+testName, float64(len(marshaledBytes))) // send result length to graph
 
 	// stay alive with only JSON result in memory so memory stats can be scraped
 	log.Printf("[+] Only marshal result is in memory. Waiting...\n")
-	time.Sleep(6 * time.Minute)
+	time.Sleep(2 * time.Minute)
+
+	if len(marshaledBytes) == 0 {
+		// dummy reference to keep marshal result in memory
+		log.Println("[+] Got empty marshal result for test " + testName)
+	}
 }
 
 func postTreeConstructionActions(testName string) {
