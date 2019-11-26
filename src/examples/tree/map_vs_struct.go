@@ -22,7 +22,7 @@ import (
 
 const (
 	treeHeight         = 4
-	numChildrenPerNode = 100
+	numChildrenPerNode = 50
 
 	nodeKeySize   = 50  // size of node ID in bytes
 	leafValueSize = 100 // size of leaf node's value field in bytes
