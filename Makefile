@@ -16,19 +16,13 @@ setup: clean-collection-volumes
 	@mkdir -p ./profiles
 
 
-main: run run-main
+main: run get-container-id run-main
 
-test: run run-test create-pprof-profiles copy-profiles
+test: run get-container-id run-test create-pprof-profiles copy-profiles
 
 run:
 	@docker-compose up --no-build --detach --remove-orphans
-	# wait until the benchmark service from docker-compose is an active container
-	@while [ -z "$$(docker-compose ps -q benchmark)" ]; do sleep 2s; done
-
-	# Get the dynamically assigned container ID
-	$(eval CONTAINER_ID = `docker-compose ps -q benchmark`)
-	@printf "Benchmark Container ID: %s\n" $(CONTAINER_ID)
-	@printf "Benchmark target: %s\n" $(BENCHMARK_TARGET)
+	@printf "Running benchmark with target package: %s\n" $(BENCHMARK_TARGET)
 
 run-main: setup-benchmark-run
 	@docker exec -i $(CONTAINER_ID) go build -v -o /bin/$(BENCHMARK_BINARY) $(BENCHMARK_TARGET)
@@ -75,15 +69,29 @@ copy-profiles:
 	docker cp $(CONTAINER_ID):/profiles/. ./profiles
 	docker cp $(CONTAINER_ID):/bin/$(BENCHMARK_BINARY) ./profiles
 
-setup-benchmark-run:
-	# kill the benchmark binary if it is already running
-	-@docker exec -i $(CONTAINER_ID) bash -c "pkill $(BENCHMARK_BINARY)"
+setup-benchmark-run: stop
 
 	# copy/overwrite Go sources to container
 	@docker cp ./src/. $(CONTAINER_ID):/go/src
 
 	# install dependencies, if needed, by the target package
 	@docker exec -i $(CONTAINER_ID) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go get ./..."
+
+# target to stop the benchmark run in the container
+stop: get-container-id
+	# kill the benchmark binary if it is already running
+	-@docker exec -i $(CONTAINER_ID) bash -c "pkill $(BENCHMARK_BINARY)"
+
+# target to get the dynamically assigned dontainer ID of the benchmark container
+get-container-id:
+ifndef $(CONTAINER_ID)
+	# wait until the benchmark service from docker-compose is an active container
+	@while [ -z "$$(docker-compose ps -q benchmark)" ]; do sleep 2s; done
+
+	# Get the dynamically assigned container ID
+	$(eval CONTAINER_ID = `docker-compose ps -q benchmark`)
+	@printf "Benchmark Container ID: %s\n" $(CONTAINER_ID)
+endif
 
 set-resource-limits:
 	# limit prometheus container to CPU 4 cores

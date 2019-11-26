@@ -22,7 +22,7 @@ import (
 
 const (
 	treeHeight         = 4
-	numChildrenPerNode = 50
+	numChildrenPerNode = 100
 
 	nodeKeySize   = 50  // size of node ID in bytes
 	leafValueSize = 100 // size of leaf node's value field in bytes
@@ -52,7 +52,7 @@ const (
 **/
 func main() {
 
-	debug.SetGCPercent(25) // hack to see if CPU usage is impacted significantly
+	debug.SetGCPercent(5) // hack to see if CPU usage is impacted significantly
 
 	telemetry.Initialize()
 

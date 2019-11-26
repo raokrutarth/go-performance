@@ -9,7 +9,7 @@ type PointerNode struct {
 	Value    []byte         `json:"Value,omitempty"` // only for the leaf nodes
 }
 
-func makeNestedNodesWithPointers() *PointerNode {
+func makeNestedNodesWithPointers(treeHeight, numChildren int) *PointerNode {
 	root := &PointerNode{Name: "root", Children: []*PointerNode{}}
 	left := &PointerNode{Name: "left_leaf", Value: []byte{1}}
 	right := &PointerNode{Name: "right_leaf", Value: []byte{2}}
