@@ -96,6 +96,7 @@ endif
 set-resource-limits:
 	# limit prometheus container to CPU 4 cores
 	docker update $$(docker-compose ps -q prometheus) --cpus 4
+	docker update $$(docker-compose ps -q benchmark) --oom-kill-disable --memory="25g"
 
 
 clean:

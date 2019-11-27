@@ -69,7 +69,6 @@ func main() {
 
 		telemetry.SetRawValue(mapTreeLeaves, 0)
 		telemetry.SetRawValue(structTreeLeaves, 0)
-		telemetry.SetRawValue(marshalResultLenTag, 0)
 
 		telemetry.SetRawValue(eventTag, 0)
 
@@ -177,6 +176,7 @@ func MarshalsAndWait(root interface{}, testName string) {
 		// dummy reference to keep marshal result in memory
 		log.Println("[+] Got empty marshal result for test " + testName)
 	}
+	telemetry.SetRawValue(marshalResultLenTag+testName, 0) // reset result length on the graph
 }
 
 func postTreeConstructionActions(testName string) {
