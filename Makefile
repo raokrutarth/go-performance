@@ -70,7 +70,6 @@ copy-profiles:
 	docker cp $(CONTAINER_ID):/bin/$(BENCHMARK_BINARY) ./profiles
 
 setup-benchmark-run: stop
-
 	# copy/overwrite Go sources to container
 	@docker cp ./src/. $(CONTAINER_ID):/go/src
 
@@ -96,7 +95,7 @@ endif
 set-resource-limits:
 	# limit prometheus container to CPU 4 cores
 	docker update $$(docker-compose ps -q prometheus) --cpus 4
-	docker update $$(docker-compose ps -q benchmark) --oom-kill-disable --memory="25g"
+	docker update $$(docker-compose ps -q benchmark) --memory="30g"
 
 
 clean:

@@ -792,7 +792,7 @@
       "title": "Context Switching/sec",
       "tooltip": {
         "shared": true,
-        "sort": 0,
+        "sort": 2,
         "value_type": "individual"
       },
       "transparent": true,
@@ -1087,6 +1087,16 @@
           "expr": "namedprocess_namegroup_read_bytes_total",
           "legendFormat": "{{groupname}} read",
           "refId": "B"
+        },
+        {
+          "expr": "sum(node_disk_read_bytes_total) by (job)",
+          "legendFormat": "Device Read",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(node_disk_written_bytes_total) by (job)",
+          "legendFormat": "Device Write",
+          "refId": "D"
         }
       ],
       "thresholds": [],
@@ -1132,9 +1142,212 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 3,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 57
+      },
+      "id": 74,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(node_vmstat_pgpgout[10s])",
+          "legendFormat": "Paged Out/sec",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(node_vmstat_pgpgin[30s])",
+          "legendFormat": "Paged In/sec",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(node_vmstat_pswpout[30s])",
+          "legendFormat": "Swapped Out/sec",
+          "refId": "C"
+        },
+        {
+          "expr": "rate(node_vmstat_pswpin[30s])",
+          "legendFormat": "Swapped In/sec",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "OS Virtual Memory & Disk I/O (vmstat)",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "deckbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 2,
+      "fillGradient": 3,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 65
+      },
+      "id": 72,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "rate(go_memstats_frees_total{job=\"benchmark_collector\"}[10s])[72h:1s]",
+          "instant": true,
+          "legendFormat": "Free/sec",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(go_memstats_mallocs_total{job=\"benchmark_collector\"}[10s])[72h:1s]",
+          "instant": true,
+          "legendFormat": "Malloc/sec",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(go_memstats_lookups_total{job=\"benchmark_collector\"}[10s])[72h:1s]",
+          "instant": true,
+          "legendFormat": "Lookup/sec",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Go Heap Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "aliasColors": {
         "Rate": "light-red",
-        "benchmark": "super-light-yellow"
+        "Rate/sec": "super-light-purple",
+        "benchmark": "dark-blue"
       },
       "bars": false,
       "dashLength": 10,
@@ -1146,7 +1359,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 57
+        "y": 65
       },
       "id": 18,
       "legend": {
@@ -1174,6 +1387,30 @@
         {
           "alias": "Rate",
           "yaxis": 2
+        },
+        {
+          "alias": "Rate/sec",
+          "yaxis": 2
+        },
+        {
+          "alias": "benchmark Total",
+          "yaxis": 2
+        },
+        {
+          "alias": "OS Total",
+          "yaxis": 2
+        },
+        {
+          "alias": "OS Major Fault Total",
+          "yaxis": 2
+        },
+        {
+          "alias": "benchmark Major Faults Total",
+          "yaxis": 2
+        },
+        {
+          "alias": "OS Faults Total",
+          "yaxis": 2
         }
       ],
       "spaceLength": 10,
@@ -1181,16 +1418,33 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "namedprocess_namegroup_thread_minor_page_faults_total + namedprocess_namegroup_thread_major_page_faults_total",
+          "expr": "namedprocess_namegroup_thread_major_page_faults_total",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{groupname}}",
+          "legendFormat": "{{groupname}} Major Faults Total",
           "refId": "A"
         },
         {
-          "expr": "rate(namedprocess_namegroup_thread_minor_page_faults_total[15s]) + rate(namedprocess_namegroup_thread_major_page_faults_total[15s])",
-          "legendFormat": "Rate/sec",
+          "expr": "rate(namedprocess_namegroup_thread_major_page_faults_total[30s])",
+          "instant": false,
+          "legendFormat": "{{groupname}} Major Faults/sec",
           "refId": "B"
+        },
+        {
+          "expr": "node_vmstat_pgmajfault",
+          "legendFormat": "OS Major Fault Total",
+          "refId": "E"
+        },
+        {
+          "expr": "rate(node_vmstat_pgmajfault[30s])",
+          "instant": false,
+          "legendFormat": "OS Major Faults/sec",
+          "refId": "F"
+        },
+        {
+          "expr": "node_vmstat_pgfault",
+          "legendFormat": "OS Faults Total",
+          "refId": "C"
         }
       ],
       "thresholds": [],
@@ -1236,6 +1490,208 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 73
+      },
+      "id": 12,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "namedprocess_namegroup_memory_bytes{memtype=\"virtual\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{groupname}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Process Virtual Memory",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "bytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 73
+      },
+      "id": 76,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "Write ops/sec",
+          "yaxis": 2
+        },
+        {
+          "alias": "Read ops/sec",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by (job) (rate(node_disk_reads_completed_total[10s]))",
+          "legendFormat": "Read ops/sec",
+          "refId": "A"
+        },
+        {
+          "expr": "sum by (job) (rate(node_disk_writes_completed_total[10s]))",
+          "legendFormat": "Write ops/sec",
+          "refId": "B"
+        },
+        {
+          "expr": "sum by (job) (rate(node_disk_read_bytes_total[10s]))",
+          "legendFormat": "Read/sec",
+          "refId": "C"
+        },
+        {
+          "expr": "sum by (job) (rate(node_disk_written_bytes_total[10s]))",
+          "legendFormat": "Write/sec",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Device Disk I/O Rates",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "aliasColors": {
         "example_gauge": "dark-red"
       },
@@ -1249,7 +1705,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 65
+        "y": 81
       },
       "id": 69,
       "legend": {
@@ -1340,7 +1796,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 65
+        "y": 81
       },
       "id": 70,
       "legend": {
@@ -1427,7 +1883,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 73
+        "y": 89
       },
       "id": 36,
       "legend": {
@@ -1508,197 +1964,6 @@
       }
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 73
-      },
-      "id": 12,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "paceLength": 10,
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "namedprocess_namegroup_memory_bytes{memtype=\"virtual\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{groupname}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Virtual Memory",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "bytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fill": 2,
-      "fillGradient": 3,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 81
-      },
-      "id": 72,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "rate(go_memstats_frees_total{job=\"benchmark_collector\"}[10s])[72h:1s]",
-          "instant": true,
-          "legendFormat": "Free/sec",
-          "refId": "A"
-        },
-        {
-          "expr": "rate(go_memstats_mallocs_total{job=\"benchmark_collector\"}[10s])[72h:1s]",
-          "instant": true,
-          "legendFormat": "Malloc/sec",
-          "refId": "B"
-        },
-        {
-          "expr": "rate(go_memstats_lookups_total{job=\"benchmark_collector\"}[10s])[72h:1s]",
-          "instant": true,
-          "legendFormat": "Lookup/sec",
-          "refId": "C"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Heap Usage",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "aliasColors": {
         "prometheus": "dark-orange"
       },
@@ -1712,7 +1977,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 81
+        "y": 89
       },
       "id": 60,
       "legend": {
@@ -1767,185 +2032,6 @@
       "yaxes": [
         {
           "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 89
-      },
-      "id": 76,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "sum(node_disk_io_time_seconds_total) by (job)",
-          "legendFormat": "Total Spent",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Device Disk I/O Time",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "s",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": null,
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 89
-      },
-      "id": 74,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "node_vmstat_pgpgout",
-          "legendFormat": "Paged to Disk",
-          "refId": "A"
-        },
-        {
-          "expr": "node_vmstat_pgpgin",
-          "legendFormat": "Paged in from Disk",
-          "refId": "B"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Virtual Memory (vmstat)",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "deckbytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -2081,7 +2167,7 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {
