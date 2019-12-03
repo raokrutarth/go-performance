@@ -3,7 +3,7 @@
 
 
 # path to the package relative to ./src/
-BENCHMARK_TARGET := examples/tree
+BENCHMARK_TARGET := examples/closures
 
 BENCHMARK_BINARY := benchmark
 
@@ -33,7 +33,7 @@ run-main: setup-benchmark-run
 
 run-test: setup-benchmark-run
 	# compile the test to a binary
-	docker exec -i $(CONTAINER_ID) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go test -c -i -o /bin/$(BENCHMARK_BINARY)"
+	@docker exec -i $(CONTAINER_ID) bash -c "cd /go/src/$(BENCHMARK_TARGET) && go test -c -i -o /bin/$(BENCHMARK_BINARY)"
 	# run the test as a binary to allow process_exporter stats
 	docker exec -i $(CONTAINER_ID) $(BENCHMARK_BINARY) \
 		-test.v \
@@ -70,7 +70,10 @@ copy-profiles:
 	docker cp $(CONTAINER_ID):/bin/$(BENCHMARK_BINARY) ./profiles
 
 setup-benchmark-run: stop
-	# copy/overwrite Go sources to container
+	# remove old sources from container
+	@docker exec -i $(CONTAINER_ID) bash -c "cd /go/src/$(BENCHMARK_TARGET) && rm -rf ./*"
+
+	# copy Go sources to container
 	@docker cp ./src/. $(CONTAINER_ID):/go/src
 
 	# install dependencies, if needed, by the target package
